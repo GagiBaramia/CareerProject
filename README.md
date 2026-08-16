@@ -1,4 +1,4 @@
-# Kariera
+# CareerProject
 
 საბაკალავრო პროექტი — კარიერული პლატფორმა კანდიდატებისა და კომპანიებისთვის, AI-ზე დაფუძნებული ვაკანსია-კანდიდატის მატჩინგითა და RAG ჩატით.
 
@@ -6,14 +6,14 @@
 
 ```text
 backend/
-├── Kariera.ApiGateway/          # ერთადერთი entry point frontend-ისთვის
-├── Kariera.UserService/         # auth, users, profiles, skills
-├── Kariera.JobService/          # companies, jobs, applications
-├── Kariera.RecommendationService/ # embeddings, hybrid matching, AI chat
-├── Kariera.NotificationService/ # notifications
-└── Kariera.Shared/              # საერთო event contracts და utilities
+├── CareerProject.ApiGateway/          # ერთადერთი entry point frontend-ისთვის
+├── CareerProject.UserService/         # auth, users, profiles, skills
+├── CareerProject.JobService/          # companies, jobs, applications
+├── CareerProject.RecommendationService/ # embeddings, hybrid matching, AI chat
+├── CareerProject.NotificationService/ # notifications
+└── CareerProject.Shared/              # საერთო event contracts და utilities
 frontend/
-└── kariera-web/                 # Angular აპლიკაცია
+└── career-project-web/                 # Angular აპლიკაცია
 docker/
 docker-compose.yml
 ```
@@ -36,7 +36,7 @@ dotnet build
 ### Frontend
 
 ```bash
-cd frontend/kariera-web
+cd frontend/career-project-web
 npm install
 npm start
 ```

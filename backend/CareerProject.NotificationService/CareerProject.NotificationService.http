@@ -1,0 +1,6 @@
+@CareerProject.NotificationService_HostAddress = http://localhost:5156
+
+GET {{CareerProject.NotificationService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

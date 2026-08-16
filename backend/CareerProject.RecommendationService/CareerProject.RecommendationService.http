@@ -1,0 +1,6 @@
+@CareerProject.RecommendationService_HostAddress = http://localhost:5190
+
+GET {{CareerProject.RecommendationService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,4 +1,4 @@
-# Kariera
+# CareerProject
 
 საბაკალავრო პროექტი. სრული ეტაპობრივი გეგმა — [PLAN.md](PLAN.md). ყოველთვის იმუშავე ამ გეგმის მიხედვით, ეტაპების თანმიმდევრობით (იხ. PLAN.md-ის "სამუშაოს რეალური თანმიმდევრობა").
 
@@ -15,7 +15,7 @@
 ## სტეკი
 
 - **Backend:** .NET 9, ASP.NET Core Web API, EF Core, PostgreSQL + pgvector
-- **Frontend:** Angular (`frontend/kariera-web`)
+- **Frontend:** Angular (`frontend/career-project-web`)
 - **Infra:** Docker Compose, Redis, RabbitMQ
 - **AI:** Gemini API (embeddings + RAG chat)
 
@@ -23,13 +23,13 @@
 
 ```text
 backend/
-├── Kariera.ApiGateway/
-├── Kariera.UserService/
-├── Kariera.JobService/
-├── Kariera.RecommendationService/
-├── Kariera.NotificationService/
-└── Kariera.Shared/
-frontend/kariera-web/
+├── CareerProject.ApiGateway/
+├── CareerProject.UserService/
+├── CareerProject.JobService/
+├── CareerProject.RecommendationService/
+├── CareerProject.NotificationService/
+└── CareerProject.Shared/
+frontend/career-project-web/
 docker/
 docker-compose.yml
 ```

@@ -6,8 +6,8 @@ obj/
 
 # ---- Angular / Node ----
 node_modules/
-frontend/kariera-web/.angular/
-frontend/kariera-web/dist/
+frontend/career-project-web/.angular/
+frontend/career-project-web/dist/
 npm-debug.log*
 
 # ---- Env / secrets ----

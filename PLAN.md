@@ -24,23 +24,23 @@ AI-ს ყოველთვის უთხარი:
 
 AI-ს მიეცი:
 
-> ვიწყებ საბაკალავრო პროექტს სახელად **Kariera**.
+> ვიწყებ საბაკალავრო პროექტს სახელად **CareerProject**.
 >
 > Backend უნდა იყოს .NET/C#-ზე, frontend Angular-ზე.
 >
 > შექმენი საწყისი repository structure:
 >
 > ```text
-> Kariera/
+> CareerProject/
 > ├── backend/
-> │   ├── Kariera.ApiGateway/
-> │   ├── Kariera.UserService/
-> │   ├── Kariera.JobService/
-> │   ├── Kariera.RecommendationService/
-> │   ├── Kariera.NotificationService/
-> │   └── Kariera.Shared/
+> │   ├── CareerProject.ApiGateway/
+> │   ├── CareerProject.UserService/
+> │   ├── CareerProject.JobService/
+> │   ├── CareerProject.RecommendationService/
+> │   ├── CareerProject.NotificationService/
+> │   └── CareerProject.Shared/
 > ├── frontend/
-> │   └── kariera-web/
+> │   └── career-project-web/
 > ├── docker/
 > ├── docker-compose.yml
 > ├── .gitignore
@@ -78,7 +78,7 @@ AI prompt:
 >
 > მონაცემთა ბაზის სახელი იყოს:
 >
-> `kariera_db`
+> `career_project_db`
 >
 > არ ჩაწერო პაროლები source code-ში.
 >
@@ -113,7 +113,7 @@ AI prompt:
 
 AI prompt:
 
-> შექმენი Kariera პროექტის მონაცემთა მოდელი Entity Framework Core-ით.
+> შექმენი CareerProject პროექტის მონაცემთა მოდელი Entity Framework Core-ით.
 >
 > საჭიროა შემდეგი entity-ები:
 >
@@ -213,7 +213,7 @@ AI prompt:
 
 AI prompt:
 
-> Kariera.UserService-ში ააწყე Authentication.
+> CareerProject.UserService-ში ააწყე Authentication.
 >
 > საჭიროა:
 >
@@ -257,7 +257,7 @@ AI prompt:
 
 AI prompt:
 
-> ააწყე `Kariera.ApiGateway`.
+> ააწყე `CareerProject.ApiGateway`.
 >
 > გამოიყენე .NET-ისთვის შესაფერისი reverse proxy/gateway გადაწყვეტა.
 >
@@ -378,7 +378,7 @@ AI prompt:
 
 AI prompt:
 
-> Angular frontend-ში შექმენი Kariera-ს authentication UI.
+> Angular frontend-ში შექმენი CareerProject-ს authentication UI.
 >
 > დიზაინი იყოს იმავე სტილში, როგორც ჩვენი mockup-ები:
 >
@@ -440,7 +440,7 @@ AI prompt:
 >
 > მარჯვენა მხარეს რეალურ დროში აჩვენე Profile Preview.
 >
-> ვიზუალურად მაქსიმალურად დაემსგავსოს Kariera-ს არსებულ დიზაინ mockup-ს.
+> ვიზუალურად მაქსიმალურად დაემსგავსოს CareerProject-ს არსებულ დიზაინ mockup-ს.
 >
 > ფორმა დააკავშირე რეალურ backend API-სთან.
 >
@@ -523,7 +523,7 @@ AI prompt:
 
 > Angular-ში ააწყე Company-ის „ახალი ვაკანსიის გამოქვეყნება“ გვერდი.
 >
-> ზუსტად გამოიყენე Kariera-ს ჩვენ მიერ შექმნილი დიზაინის სტილი.
+> ზუსტად გამოიყენე CareerProject-ს ჩვენ მიერ შექმნილი დიზაინის სტილი.
 >
 > ფორმა:
 >
@@ -551,7 +551,7 @@ AI prompt:
 
 > პროექტში შექმენი RabbitMQ-ზე დაფუძნებული საერთო event infrastructure.
 >
-> Kariera.Shared-ში შექმენი event contracts:
+> CareerProject.Shared-ში შექმენი event contracts:
 >
 > * ProfileCreated
 > * ProfileUpdated
@@ -662,7 +662,7 @@ AI prompt:
 
 AI prompt:
 
-> Angular-ში ააწყე Kariera კანდიდატის მთავარი რეკომენდაციების გვერდი.
+> Angular-ში ააწყე CareerProject კანდიდატის მთავარი რეკომენდაციების გვერდი.
 >
 > Route:
 >
@@ -687,7 +687,7 @@ AI prompt:
 > * employment type filter
 > * sorting by matching
 >
-> ვიზუალურად დაემსგავსოს Kariera-ს უკვე შექმნილ mockup-ს.
+> ვიზუალურად დაემსგავსოს CareerProject-ს უკვე შექმნილ mockup-ს.
 >
 > ამ ეტაპზე გვერდზე არსებული ვაკანსიების სია მთლიანად რეალური API-დან უნდა მოდიოდეს.
 
@@ -766,7 +766,7 @@ AI prompt:
 
 AI prompt:
 
-> RecommendationService-ში ააწყე Kariera AI Job Assistant.
+> RecommendationService-ში ააწყე CareerProject AI Job Assistant.
 >
 > Endpoint:
 >
@@ -806,7 +806,7 @@ AI prompt:
 
 > Angular-ის რეკომენდაციების გვერდის მარჯვენა მხარეს დაამატე AI Assistant panel.
 >
-> დიზაინი მაქსიმალურად დაემსგავსოს Kariera mockup-ს.
+> დიზაინი მაქსიმალურად დაემსგავსოს CareerProject mockup-ს.
 >
 > უნდა ჰქონდეს:
 >
@@ -857,7 +857,7 @@ AI prompt:
 
 AI prompt:
 
-> Kariera პროექტს დაამატე automated tests.
+> CareerProject პროექტს დაამატე automated tests.
 >
 > აუცილებელია:
 >
@@ -898,7 +898,7 @@ AI prompt:
 
 AI prompt:
 
-> Kariera-ს ყველა კომპონენტი ჩასვი Docker-ში.
+> CareerProject-ს ყველა კომპონენტი ჩასვი Docker-ში.
 >
 > ერთი `docker compose up -d` ბრძანებით უნდა გაეშვას:
 >
