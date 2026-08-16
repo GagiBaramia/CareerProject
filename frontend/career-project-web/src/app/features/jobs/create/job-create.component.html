@@ -1,0 +1,135 @@
+<div class="page">
+  <header class="brand-header">
+    <div class="brand">
+      <span class="brand-icon">💼</span>
+      <span class="brand-name">კარიერა</span>
+    </div>
+    <button type="button" class="link-btn" (click)="cancel()">← უკან</button>
+  </header>
+
+  <main class="content">
+    <nav class="breadcrumb">ვაკანსიები &gt; ახალი ვაკანსიის გამოქვეყნება</nav>
+    <h1 class="page-title">ახალი ვაკანსიის გამოქვეყნება</h1>
+
+    <div class="grid">
+      <section class="form-card">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="job-form">
+          <label class="field">
+            <span class="field-label">ვაკანსიის სათაური *</span>
+            <input
+              type="text"
+              formControlName="title"
+              class="field-input"
+              maxlength="80"
+              placeholder="მაგ. ფრონტენდის დეველოპერი (React)"
+            />
+            <span class="char-counter">{{ titleLength }} / 80</span>
+            @if (form.controls.title.touched && form.controls.title.invalid) {
+              <span class="field-error">სათაური აუცილებელია</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field-label">ვაკანსიის აღწერა *</span>
+            <textarea
+              formControlName="description"
+              class="field-input field-textarea"
+              maxlength="2000"
+              rows="6"
+              placeholder="აღწერეთ ვაკანსიის დეტალები, მოთხოვნები და პასუხისმგებლობები"
+            ></textarea>
+            <span class="char-counter">{{ descriptionLength }} / 2000</span>
+            @if (form.controls.description.touched && form.controls.description.invalid) {
+              <span class="field-error">აღწერა აუცილებელია</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field-label">ადგილმდებარეობა *</span>
+            <input
+              type="text"
+              formControlName="location"
+              class="field-input"
+              placeholder="თბილისი, საქართველო"
+            />
+          </label>
+
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">სამუშაო გრაფიკი *</span>
+              <select formControlName="employmentType" class="field-input">
+                @for (option of employmentTypes; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field-label">სამუშაო ფორმატი *</span>
+              <select formControlName="workFormat" class="field-input">
+                @for (option of workFormats; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </label>
+          </div>
+
+          <div class="field">
+            <span class="field-label">საჭირო უნარები *</span>
+            <app-skills-autocomplete [selected]="skills()" (selectedChange)="onSkillsChange($event)" />
+          </div>
+
+          <div class="field">
+            <span class="field-label">ხელფასის შუალედი (თვიურად)</span>
+            <div class="salary-row">
+              <input type="number" formControlName="salaryMin" class="field-input" placeholder="1500" />
+              <span class="salary-sep">—</span>
+              <input type="number" formControlName="salaryMax" class="field-input" placeholder="2500" />
+              <select formControlName="salaryCurrency" class="field-input salary-currency">
+                @for (currency of currencies; track currency) {
+                  <option [value]="currency">{{ currency }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (errorMessage()) {
+            <div class="form-error">{{ errorMessage() }}</div>
+          }
+
+          <div class="form-actions">
+            <button type="button" class="btn-outline" (click)="cancel()">გაუქმება</button>
+            <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+              {{ isSubmitting() ? 'ქვეყნდება...' : 'ვაკანსიის გამოქვეყნება' }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="candidates-card">
+        <div class="candidates-header">
+          <h3 class="candidates-title">ბოლო კანდიდატები</h3>
+        </div>
+        <table class="candidates-table">
+          <thead>
+            <tr>
+              <th>კანდიდატი</th>
+              <th>თარიღი</th>
+              <th>სტატუსი</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (candidate of recentCandidates; track candidate.name) {
+              <tr>
+                <td>{{ candidate.name }}</td>
+                <td>{{ candidate.date }}</td>
+                <td><span class="status-badge">{{ candidate.status }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <p class="candidates-hint">* მაგალითის მონაცემები — Application ფუნქციონალი მომავალ ეტაპზე აშენდება.</p>
+      </aside>
+    </div>
+  </main>
+</div>

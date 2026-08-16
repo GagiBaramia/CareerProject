@@ -92,4 +92,12 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 დადასტურდა Gateway-ის გავლით: create/list/get/update/delete, ownership 403, role 403 (Person-ს POST/PUT/DELETE არ შეუძლია, მაგრამ list/get კი), unknown skill id → 400, RabbitMQ publish counter.
 
-შემდეგი: **ეტაპი 12 — Vacancy Creation UI** (`docs/mockups/job-posting.png`-ს დაეყრდნობა — ჯერ არ აიტვირთა).
+ეტაპი 12 (Vacancy Creation UI) დასრულებულია და დადასტურებულია: `/jobs/new` — Company-only route (`companyGuard`, Person-ს ავტომატურად აბრუნებს `/dashboard/person`-ზე). ფორმა: სათაური (80), აღწერა (2000), ადგილმდებარეობა, სამუშაო გრაფიკი/ფორმატი dropdown-ები, skills (`SkillsAutocompleteComponent`-ის ხელახლა გამოყენებით), ხელფასის შუალედი+ვალუტა. მარჯვნივ "ბოლო კანდიდატები" static მაგალითი (Task 12-ის თავად დაშვებული გამონაკლისი — Application ფუნქციონალი ჯერ არ არსებობს).
+
+**Backend-ის გაფართოება (გამომდინარეობს Task 12-ის ფორმის სპეციფიკაციიდან):** მაკეტს ჰქონდა `WorkFormat` (Remote/Office/Hybrid) და ხელფასის შუალედი, რაც Task 3/11-ის `Job` entity-ს არ ჰქონდა — დავამატე `Job.WorkFormat`, `SalaryMin`, `SalaryMax`, `SalaryCurrency` (`CareerProject.Shared` + migration + `CareerProject.JobService`-ის DTO/endpoint-ები).
+
+**რეფაქტორი:** `SkillsAutocompleteComponent` გადავიტანე `features/profile-wizard/`-დან `shared/components/`-ში (ახლა job-create-საც სჭირდებოდა), და საერთო page-shell/form CSS (`brand-header`, `field`, ღილაკები) გავიტანე `shared/styles/page-form-shell.css`-ში — მესამედ აღარ გამეორდა (login/register-ს ცალკე დავტოვე, განსხვავებული layout აქვს).
+
+**რეალურად შემოწმდა ბრაუზერში** (Playwright): company რეგისტრაცია → dashboard → "გამოაქვეყნე ვაკანსია" → ფორმის შევსება (2 skill-ით, dropdown-ებით, ხელფასით) → submit → რეალურად შეიქმნა JobService-ში (დადასტურდა `GET /api/jobs`-ით) → Person-ის მცდელობა `/jobs/new`-ზე პირდაპირი URL-ით წვდომისთვის → ავტომატური redirect `/dashboard/person`-ზე.
+
+შემდეგი: **ეტაპი 13 — RabbitMQ Event Bus** (საერთო publisher/consumer abstraction — აქამდე ორივე სერვისს (`ProfileEventPublisher`, `JobEventPublisher`) ჰქონდა თავისი მინიმალური ვერსია, ამ ეტაპზე გაერთიანდება).

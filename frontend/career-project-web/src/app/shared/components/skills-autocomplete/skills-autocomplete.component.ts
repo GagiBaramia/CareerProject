@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, Output, inject, signal } from '@angular
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SkillsService } from '../../../../core/services/skills.service';
-import { PROFICIENCY_LEVELS, ProficiencyLevel, ProfileSkill, Skill } from '../../../../core/models/profile.models';
+import { SkillsService } from '../../../core/services/skills.service';
+import { PROFICIENCY_LEVELS, ProficiencyLevel, ProfileSkill, Skill } from '../../../core/models/profile.models';
 
 @Component({
   selector: 'app-skills-autocomplete',

@@ -48,7 +48,11 @@ public static class JobEndpoints
             Title = request.Title,
             Description = request.Description,
             EmploymentType = request.EmploymentType,
+            WorkFormat = request.WorkFormat,
             Location = request.Location,
+            SalaryMin = request.SalaryMin,
+            SalaryMax = request.SalaryMax,
+            SalaryCurrency = request.SalaryCurrency,
             CreatedAt = DateTime.UtcNow,
         };
 
@@ -116,7 +120,11 @@ public static class JobEndpoints
         job.Title = request.Title;
         job.Description = request.Description;
         job.EmploymentType = request.EmploymentType;
+        job.WorkFormat = request.WorkFormat;
         job.Location = request.Location;
+        job.SalaryMin = request.SalaryMin;
+        job.SalaryMax = request.SalaryMax;
+        job.SalaryCurrency = request.SalaryCurrency;
 
         db.JobSkills.RemoveRange(job.JobSkills);
         job.JobSkills.Clear();
@@ -212,7 +220,11 @@ public static class JobEndpoints
         Title = job.Title,
         Description = job.Description,
         EmploymentType = job.EmploymentType,
+        WorkFormat = job.WorkFormat,
         Location = job.Location,
+        SalaryMin = job.SalaryMin,
+        SalaryMax = job.SalaryMax,
+        SalaryCurrency = job.SalaryCurrency,
         CreatedAt = job.CreatedAt,
         CompanyId = job.CompanyId,
         CompanyName = job.Company.Name,

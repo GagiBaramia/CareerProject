@@ -1,13 +1,18 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-company-dashboard',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <div style="padding: 40px; font-family: var(--font-sans);">
       <h1>გამარჯობა, {{ auth.currentUser()?.displayName }} 👋</h1>
-      <p>კომპანიის dashboard აქ აშენდება Stage 12-ზე (ვაკანსიის გამოქვეყნება).</p>
+      <p>
+        <a routerLink="/jobs/new">გამოაქვეყნე ახალი ვაკანსია</a>
+      </p>
+      <p>დანარჩენი dashboard აქ აშენდება მომდევნო ეტაპებზე.</p>
     </div>
   `
 })

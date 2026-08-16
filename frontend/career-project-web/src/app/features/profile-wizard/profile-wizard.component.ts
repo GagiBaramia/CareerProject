@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { ProfileSkill } from '../../core/models/profile.models';
-import { SkillsAutocompleteComponent } from './components/skills-autocomplete/skills-autocomplete.component';
+import { SkillsAutocompleteComponent } from '../../shared/components/skills-autocomplete/skills-autocomplete.component';
 
 interface WizardStep {
   step: number;

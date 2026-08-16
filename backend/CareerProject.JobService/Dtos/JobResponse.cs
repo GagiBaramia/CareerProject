@@ -6,7 +6,11 @@ public class JobResponse
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string EmploymentType { get; set; } = null!;
+    public string WorkFormat { get; set; } = null!;
     public string Location { get; set; } = null!;
+    public int? SalaryMin { get; set; }
+    public int? SalaryMax { get; set; }
+    public string? SalaryCurrency { get; set; }
     public DateTime CreatedAt { get; set; }
     public Guid CompanyId { get; set; }
     public string CompanyName { get; set; } = null!;
