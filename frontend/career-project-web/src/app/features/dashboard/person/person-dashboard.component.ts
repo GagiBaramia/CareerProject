@@ -12,7 +12,9 @@ import { AuthService } from '../../../core/services/auth.service';
       <p>
         <a routerLink="/profile/edit">შეავსე პროფილი</a> — დაამატე CV-ის დეტალები და უნარები.
       </p>
-      <p>დანარჩენი dashboard აქ აშენდება Stage 16-ზე (რეკომენდაციები).</p>
+      <p>
+        <a routerLink="/jobs/recommended">ვაკანსიების რეკომენდაციები</a> — შენთვის შერჩეული ვაკანსიები.
+      </p>
     </div>
   `
 })

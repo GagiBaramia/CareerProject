@@ -122,4 +122,10 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა Gateway-ის გვერდის ავლით, პირდაპირ სერვისზე:** score-ები ხელით გამოთვლას ემთხვევა ორივე შემთხვევაში (embedding-იანი job: `0.6×1 + 0.4×0.913 = 0.965`; embedding-ის გარეშე: `0.6×0.5 + 0.4×0 = 0.3`), დალაგება score-ის კლებადობით სწორია, ახალ Person-ს embedding-ის გარეშეც (fallback branch) სწორად უბრუნებს მხოლოდ skill-overlap-ზე დაფუძნებულ score-ს, Company/token-ის გარეშე — 403/401.
 
-შემდეგი: **ეტაპი 16 — Recommendations UI** (`docs/mockups/recommendations-dashboard.png`-ს დაეყრდნობა).
+ეტაპი 16 (Recommendations UI) დასრულებულია და დადასტურებულია: `/jobs/recommended` (Person-only, `personGuard` — ახალი, `companyGuard`-ის სარკისებური). Job card-ები (title, company, location, employment type, work format, salary, skills, matching %), location/employment-type filter-ები, sort-by-matching toggle — ყველა client-side `computed()` signal-ით, მონაცემები მთლიანად რეალური `GET /api/recommendations/jobs`-იდან. AI Assistant panel (მაკეტში ჩანდა) **განზრახ არ ავაშენე** — ეს Stage 20-ის საქმეა, არა Task 16-ისა.
+
+**სატესტო მონაცემები დაემატა** (მომხმარებლის მოთხოვნით, დემოსა და ამ გვერდის რეალურ ტესტირებას ერთდროულად ემსახურება): 6 რეალისტური კომპანია/ვაკანსია (TBC Bank, Bank of Georgia, EPAM Systems, Datablitz Studio, CloudNine Georgia, TechHub Georgia) — სხვადასხვა employment type/work format/ლოკაცია/skill-სეტით, ცალკე Node.js seed script-ით (`docs/`-ში არ შენახულა, ერთჯერადი გამოყენებისთვის იყო).
+
+**რეალურად შემოწმდა ბრაუზერში** (Playwright, realistic მონაცემებზე): Nino-ს (C#/.NET candidate) რეკომენდაციები სწორად დაალაგა — TBC Bank/.NET ვაკანსიები მაღლა (64-97%), React frontend ვაკანსია ყველაზე დაბლა (28%); employment-type filter-მა ზუსტად 1 job დატოვა (Internship); sort toggle-მა სწორად შეაბრუნა დალაგება. Console errors — არცერთი.
+
+შემდეგი: **ეტაპი 17 — Application (განაცხადის გაგზავნა)**.

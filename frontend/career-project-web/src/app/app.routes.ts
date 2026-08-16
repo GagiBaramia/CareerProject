@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { companyGuard } from './core/guards/company.guard';
+import { personGuard } from './core/guards/person.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -42,6 +43,14 @@ export const routes: Routes = [
     canActivate: [companyGuard],
     loadComponent: () =>
       import('./features/jobs/create/job-create.component').then((m) => m.JobCreateComponent)
+  },
+  {
+    path: 'jobs/recommended',
+    canActivate: [personGuard],
+    loadComponent: () =>
+      import('./features/jobs/recommended/job-recommendations.component').then(
+        (m) => m.JobRecommendationsComponent
+      )
   },
   { path: '**', redirectTo: 'login' }
 ];
