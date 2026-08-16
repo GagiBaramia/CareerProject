@@ -70,4 +70,8 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეფაქტორი:** `AuthEndpoints`-სა და `ProfileEndpoints`-ს შორის დუბლირებული `TryValidate` helper გავიტანე `CareerProject.UserService/Validation/RequestValidator.cs`-ში.
 
-შემდეგი: **ეტაპი 8 — Angular Login/Register UI**.
+ეტაპი 8 (Angular Login/Register UI) დასრულებულია და დადასტურებულია: `/login`, `/register` (Person/Company toggle), `AuthService` (signal-based, localStorage-ში ინახავს token-ს), `authInterceptor` (Authorization header ავტომატურად), `authGuard` (protected routes). Login/register-ის შემდეგ role-ის მიხედვით redirect `/dashboard/person` ან `/dashboard/company`-ზე (ორივე ჯერ placeholder — რეალური კონტენტი Stage 16/12-ზე). დიზაინი: თეთრი/ლურჯი, „კარიერა" ბრენდი მარცხნივ ზემოთ — მაკეტების დიზაინის ენას დავეყრდენი (dedicated login მაკეტი არ არსებობდა).
+
+**რეალურად შემოწმდა ბრაუზერში** (Playwright, headless Chromium — `chromium-cli` ამ მანქანაზე არ იყო, alternative driver დავწერე): login/register გვერდები ვიზუალურად, registration → redirect → dashboard, logout+login round-trip, არასწორი პაროლის error state. Console errors — მხოლოდ მოსალოდნელი 401 (wrong-password ტესტიდან).
+
+შემდეგი: **ეტაპი 9 — Profile Wizard UI** (`docs/mockups/profile-wizard.png`-ს დაეყრდნობა უშუალოდ — ჯერ არ აიტვირთა).

@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <header class="brand-header">
+    <div class="brand">
+      <span class="brand-icon">💼</span>
+      <span class="brand-name">კარიერა</span>
+    </div>
+  </header>
+
+  <main class="auth-content">
+    <div class="auth-card">
+      <h1 class="auth-title">შესვლა</h1>
+      <p class="auth-subtitle">გაგრძელეთ თქვენს ანგარიშზე შესვლა</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        <label class="field">
+          <span class="field-label">ელ.ფოსტა</span>
+          <input
+            type="email"
+            formControlName="email"
+            class="field-input"
+            placeholder="example@email.com"
+            autocomplete="email"
+          />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <span class="field-error">მიუთითეთ სწორი ელ.ფოსტა</span>
+          }
+        </label>
+
+        <label class="field">
+          <span class="field-label">პაროლი</span>
+          <input
+            type="password"
+            formControlName="password"
+            class="field-input"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <span class="field-error">პაროლი აუცილებელია</span>
+          }
+        </label>
+
+        @if (errorMessage()) {
+          <div class="form-error">{{ errorMessage() }}</div>
+        }
+
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'იტვირთება...' : 'შესვლა' }}
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        არ გაქვთ ანგარიში? <a routerLink="/register">დარეგისტრირდით</a>
+      </p>
+    </div>
+  </main>
+</div>
