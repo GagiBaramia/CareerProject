@@ -1,5 +1,6 @@
 using System.Text;
 using CareerProject.JobService.Endpoints;
+using CareerProject.JobService.Events;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +39,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CompanyOnly", policy => policy.RequireRole(UserRole.Company.ToString()));
 });
 
+builder.Services.AddSingleton<JobEventPublisher>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -51,5 +54,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapCompanyEndpoints();
+app.MapJobEndpoints();
 
 app.Run();

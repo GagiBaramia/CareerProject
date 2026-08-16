@@ -88,4 +88,8 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 დადასტურდა Gateway-ის გავლით: GET/PUT company profile, 403 Person-ისთვის, 401 token-ის გარეშე.
 
-შემდეგი: **ეტაპი 11 — Job CRUD**.
+ეტაპი 11 (Job CRUD) დასრულებულია და დადასტურებულია: `CareerProject.JobService`-ში `POST/GET/GET-by-id/PUT/DELETE /api/jobs`. `POST/PUT/DELETE` — მხოლოდ Company role, **და** მხოლოდ job-ის მფლობელი კომპანია (403 სხვა კომპანიის job-ის რედაქტირებაზე/წაშლაზე). `GET` (სია + ცალკეული) — ნებისმიერი authenticated user (Person-იც, არა მხოლოდ Company — ეს Task 11-ის ტექსტიდან გამომდინარეობს, სადაც restriction მხოლოდ create/edit-ზეა). `JobSkill.RequiredLevel` გადავიდა `ProficiencyLevel` enum-ზე (`PersonSkill.Level`-ის იგივე პატერნი). `JobEventPublisher` — `JobCreated`/`JobUpdated`, იგივე მინიმალური RabbitMQ მიდგომა, რაც Profile event-ებს ჰქონდა.
+
+დადასტურდა Gateway-ის გავლით: create/list/get/update/delete, ownership 403, role 403 (Person-ს POST/PUT/DELETE არ შეუძლია, მაგრამ list/get კი), unknown skill id → 400, RabbitMQ publish counter.
+
+შემდეგი: **ეტაპი 12 — Vacancy Creation UI** (`docs/mockups/job-posting.png`-ს დაეყრდნობა — ჯერ არ აიტვირთა).
