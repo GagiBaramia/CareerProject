@@ -37,6 +37,8 @@ cp .env.example .env
 docker compose up -d
 ```
 
+> PostgreSQL კონტეინერი host-ზე ნაგულისხმევად პორტ `5433`-ზეა (არა სტანდარტული `5432`) — რომ არ დაუპირისპირდეს ლოკალურად დაინსტალირებულ PostgreSQL-ს, თუ ასეთი გაქვს.
+
 **შემოწმება:**
 
 ```bash
@@ -56,6 +58,15 @@ RabbitMQ Management UI: [http://localhost:15672](http://localhost:15672) (login 
 ```bash
 cd backend
 dotnet build
+```
+
+მონაცემთა ბაზის სქემის გასაშვებად (migrations `CareerProject.Shared`-შია):
+
+```bash
+cd backend/CareerProject.Shared
+POSTGRES_HOST=localhost POSTGRES_PORT=5433 POSTGRES_DB=career_project_db \
+POSTGRES_USER=career_project POSTGRES_PASSWORD=<შენი .env-დან> \
+dotnet ef database update
 ```
 
 ### 3. Frontend

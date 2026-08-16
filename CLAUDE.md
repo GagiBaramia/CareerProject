@@ -48,4 +48,8 @@ docker-compose.yml
 
 ეტაპი 2 (Docker) დასრულებულია და დადასტურებულია: `docker compose up -d` გაშვებულია, PostgreSQL/Redis/RabbitMQ ყველა healthy, pgvector extension ჩატვირთულია, RabbitMQ Management UI ხელმისაწვდომია (`localhost:15672`).
 
-შემდეგი: **ეტაპი 3 — მონაცემთა ბაზის მოდელი (EF Core entities)**.
+ეტაპი 3 (EF Core მოდელი) დასრულებულია და დადასტურებულია: 9 entity (`User`, `PersonProfile`, `Skill`, `PersonSkill`, `Company`, `Job`, `JobSkill`, `Application`, `ChatMessage`) + `CareerProjectDbContext` `CareerProject.Shared/Entities/` და `Data/`-ში, `InitialCreate` migration შექმნილია და გატარებულია რეალურ Docker Postgres-ზე (ცხრილები, FK/cascade წესები, `vector(768)` სვეტები Person/Job embedding-ისთვის — დადასტურდა `\dt`/`\d`-ით).
+
+**შენიშვნა:** ამ მანქანაზე ცალკე ნატიური PostgreSQL 18 Windows service დგას (`postgresql-x64-18`), რომელიც პორტ 5432-ს იკავებს — ამიტომ Docker-ის PostgreSQL კონტეინერი host-პორტ `5433`-ზეა გადატანილი (`.env`/`.env.example`, `POSTGRES_PORT=5433`), რომ კონფლიქტი არ მოხდეს. `dotnet ef` ბრძანებები `CareerProject.Shared`-იდან უნდა გაეშვას, connection info მხოლოდ environment variables-იდან იკითხება (`CareerProjectDbContextFactory`), არასოდეს hardcoded.
+
+შემდეგი: **ეტაპი 4 — ავტორიზაცია (UserService: register/login, JWT)**.
