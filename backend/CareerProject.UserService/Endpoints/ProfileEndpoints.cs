@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
+using CareerProject.Shared.Events;
+using CareerProject.Shared.Messaging;
 using CareerProject.UserService.Dtos;
-using CareerProject.UserService.Events;
 using CareerProject.Shared.Validation;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +35,7 @@ public static class ProfileEndpoints
         UpdateProfileRequest request,
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        ProfileEventPublisher publisher)
+        IEventPublisher publisher)
     {
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
@@ -56,9 +57,9 @@ public static class ProfileEndpoints
         await db.SaveChangesAsync();
 
         if (isFirstCompletion)
-            await publisher.PublishProfileCreatedAsync(profile.Id);
+            await publisher.PublishAsync(new ProfileCreated { EntityId = profile.Id });
         else
-            await publisher.PublishProfileUpdatedAsync(profile.Id);
+            await publisher.PublishAsync(new ProfileUpdated { EntityId = profile.Id });
 
         return Results.Ok(ToResponse(profile));
     }
@@ -67,7 +68,7 @@ public static class ProfileEndpoints
         UpdateProfileSkillsRequest request,
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        ProfileEventPublisher publisher)
+        IEventPublisher publisher)
     {
         var profile = await LoadProfile(user, db);
         if (profile is null)
@@ -110,7 +111,7 @@ public static class ProfileEndpoints
         }
 
         await db.SaveChangesAsync();
-        await publisher.PublishProfileUpdatedAsync(profile.Id);
+        await publisher.PublishAsync(new ProfileUpdated { EntityId = profile.Id });
 
         var refreshed = await LoadProfile(user, db);
         return Results.Ok(ToResponse(refreshed!));

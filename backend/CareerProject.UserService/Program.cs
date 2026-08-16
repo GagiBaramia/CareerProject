@@ -1,9 +1,9 @@
 using System.Text;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
+using CareerProject.Shared.Messaging;
 using CareerProject.UserService.Auth;
 using CareerProject.UserService.Endpoints;
-using CareerProject.UserService.Events;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,7 +42,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("PersonOnly", policy => policy.RequireRole(UserRole.Person.ToString()));
 });
 
-builder.Services.AddSingleton<ProfileEventPublisher>();
+builder.Services.AddCareerProjectEventPublisher();
 
 var app = builder.Build();
 

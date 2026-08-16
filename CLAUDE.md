@@ -100,4 +100,10 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა ბრაუზერში** (Playwright): company რეგისტრაცია → dashboard → "გამოაქვეყნე ვაკანსია" → ფორმის შევსება (2 skill-ით, dropdown-ებით, ხელფასით) → submit → რეალურად შეიქმნა JobService-ში (დადასტურდა `GET /api/jobs`-ით) → Person-ის მცდელობა `/jobs/new`-ზე პირდაპირი URL-ით წვდომისთვის → ავტომატური redirect `/dashboard/person`-ზე.
 
-შემდეგი: **ეტაპი 13 — RabbitMQ Event Bus** (საერთო publisher/consumer abstraction — აქამდე ორივე სერვისს (`ProfileEventPublisher`, `JobEventPublisher`) ჰქონდა თავისი მინიმალური ვერსია, ამ ეტაპზე გაერთიანდება).
+ეტაპი 13 (RabbitMQ Event Bus) დასრულებულია და დადასტურებულია: `CareerProject.Shared/Events/` — `EventBase` (EventId/OccurredAt/EntityId + RoutingKey) და 6 event contract (`ProfileCreated`, `ProfileUpdated`, `JobCreated`, `JobUpdated`, `ApplicationSubmitted`, `ApplicationStatusChanged` — ბოლო ორი ჯერ არსად გამოიყენება, Stage 17-მდე). `CareerProject.Shared/Messaging/`: `IEventPublisher`/`RabbitMqEventPublisher` (retry 3-jერ, exponential-ისმაგვარი backoff, publish failure request-ს არ აჩერებს — მხოლოდ log-დება) და `RabbitMqConsumerBase<TEvent>` (BackgroundService, retry + nack-without-requeue poison message-ებზე) — მომავალი კონკრეტული consumer-ებისთვის (Stage 14/18), ჯერ არცერთი არ ჩართულა production კოდში.
+
+**UserService/JobService**-ის ძველი, task-სპეციფიური `ProfileEventPublisher`/`JobEventPublisher` წაიშალა, ორივემ ახლა საერთო `IEventPublisher`-ს იყენებს (`AddCareerProjectEventPublisher()` extension).
+
+**რეალურად შემოწმდა:** (1) ჩვეულებრივი publish — `publish_in` counter გაიზარდა; (2) **RabbitMQ-ს დროებით გათიშვა** (`docker stop`) — request მაინც 200-ით დაბრუნდა (< 1წმ), log-ში ზუსტად ჩანს 3 მცდელობა (warn→warn→fail), caller არ დაბლოკილა; (3) **აღდგენა** — RabbitMQ-ს ჩართვის შემდეგ publish ისევ იმუშავა ავტომატურად (RabbitMQ.Client-ის built-in connection recovery); (4) **Consumer** — დროებით, ცალკე scratch პროექტში (production კოდში არ შესულა) გავუშვი `RabbitMqConsumerBase<ProfileUpdated>`-ის subclass, რეალურმა `PUT /api/profile/me`-მ გამოაქვეყნა event და consumer-მა წარმატებით მიიღო/დამუშავა — publisher-consumer მთელი ჯაჭვი დადასტურებულია.
+
+შემდეგი: **ეტაპი 14 — CV და Job embedding** (Gemini API, RecommendationService).

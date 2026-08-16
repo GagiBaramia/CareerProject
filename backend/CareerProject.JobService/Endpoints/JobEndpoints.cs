@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using CareerProject.JobService.Dtos;
-using CareerProject.JobService.Events;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
+using CareerProject.Shared.Events;
+using CareerProject.Shared.Messaging;
 using CareerProject.Shared.Validation;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +26,7 @@ public static class JobEndpoints
         JobRequest request,
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        JobEventPublisher publisher)
+        IEventPublisher publisher)
     {
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
@@ -63,7 +64,7 @@ public static class JobEndpoints
 
         db.Jobs.Add(job);
         await db.SaveChangesAsync();
-        await publisher.PublishJobCreatedAsync(job.Id);
+        await publisher.PublishAsync(new JobCreated { EntityId = job.Id });
 
         var created = await LoadJob(db, job.Id);
         return Results.Created($"/api/jobs/{job.Id}", ToResponse(created!));
@@ -94,7 +95,7 @@ public static class JobEndpoints
         JobRequest request,
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        JobEventPublisher publisher)
+        IEventPublisher publisher)
     {
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
@@ -134,7 +135,7 @@ public static class JobEndpoints
         }
 
         await db.SaveChangesAsync();
-        await publisher.PublishJobUpdatedAsync(job.Id);
+        await publisher.PublishAsync(new JobUpdated { EntityId = job.Id });
 
         var updated = await LoadJob(db, job.Id);
         return Results.Ok(ToResponse(updated!));
