@@ -37,6 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CompanyOnly", policy => policy.RequireRole(UserRole.Company.ToString()));
+    options.AddPolicy("PersonOnly", policy => policy.RequireRole(UserRole.Person.ToString()));
 });
 
 builder.Services.AddCareerProjectEventPublisher();
@@ -55,5 +56,6 @@ app.UseAuthorization();
 
 app.MapCompanyEndpoints();
 app.MapJobEndpoints();
+app.MapApplicationEndpoints();
 
 app.Run();

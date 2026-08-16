@@ -1,9 +1,9 @@
 using System.Security.Claims;
+using CareerProject.JobService.Auth;
 using CareerProject.JobService.Dtos;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.Shared.Validation;
-using Microsoft.EntityFrameworkCore;
 
 namespace CareerProject.JobService.Endpoints;
 
@@ -21,7 +21,7 @@ public static class CompanyEndpoints
 
     private static async Task<IResult> GetMyCompany(ClaimsPrincipal user, CareerProjectDbContext db)
     {
-        var company = await LoadCompany(user, db);
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
         if (company is null)
             return Results.NotFound();
 
@@ -36,7 +36,7 @@ public static class CompanyEndpoints
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
-        var company = await LoadCompany(user, db);
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
         if (company is null)
             return Results.NotFound();
 
@@ -48,13 +48,6 @@ public static class CompanyEndpoints
         await db.SaveChangesAsync();
 
         return Results.Ok(ToResponse(company));
-    }
-
-    private static async Task<Company?> LoadCompany(ClaimsPrincipal user, CareerProjectDbContext db)
-    {
-        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub")!);
-
-        return await db.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
     }
 
     private static CompanyProfileResponse ToResponse(Company company) => new()

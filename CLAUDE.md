@@ -128,4 +128,14 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა ბრაუზერში** (Playwright, realistic მონაცემებზე): Nino-ს (C#/.NET candidate) რეკომენდაციები სწორად დაალაგა — TBC Bank/.NET ვაკანსიები მაღლა (64-97%), React frontend ვაკანსია ყველაზე დაბლა (28%); employment-type filter-მა ზუსტად 1 job დატოვა (Internship); sort toggle-მა სწორად შეაბრუნა დალაგება. Console errors — არცერთი.
 
-შემდეგი: **ეტაპი 17 — Application (განაცხადის გაგზავნა)**.
+ეტაპი 17 (Application flow) დასრულებულია და დადასტურებულია: `CareerProject.JobService`-ში `POST /api/jobs/{jobId}/apply` (PersonOnly), `GET /api/company/jobs/{jobId}/applications` და `PATCH /api/applications/{id}/status` (ორივე CompanyOnly + job ownership check). `Application.Status` — Task 3-ის plain string-იდან `ApplicationStatus` enum-ზე (Submitted/InReview/Interview/Rejected/Accepted), იგივე პატერნი რაც `ProficiencyLevel`-ს ჰქონდა. დუბლირებული განაცხადის თავიდან აცილება **ორ დონეზე**: app-level check + DB-level unique index `(JobId, PersonId)`-ზე.
+
+**Migration-ის ხელით შესწორება:** `Status`-ის string→int (enum) ცვლილებამ ავტომატური cast ვერ იპოვა (Postgres `text`→`integer` პირდაპირ ვერ იკასტება) — migration-ში ხელით ჩავანაცვლე `AlterColumn` `DropColumn`+`AddColumn`-ით (უსაფრთხო, რადგან `Applications` ცხრილი ცარიელი იყო).
+
+**რეფაქტორი:** JobService-ში `LoadCompany` სამ სხვადასხვა endpoint ფაილში იყო თითქმის იდენტურად დუბლირებული (`CompanyEndpoints`, `JobEndpoints`, ახლა `ApplicationEndpoints`-იც დაემატებოდა) — გავიტანე `Auth/CurrentUserResolver.cs`-ში (`LoadCurrentCompanyAsync`, ახალი `LoadCurrentPersonProfileAsync`).
+
+**Gateway routing ცვლილება არ დასჭირდა** — `/api/jobs/*`, `/api/company/*`, `/api/applications/*` უკვე Stage 5/10-დან იყო დაფარული.
+
+**რეალურად შემოწმდა:** Nino-მ განაცხადი გაგზავნა TBC Bank-ის ვაკანსიაზე (201), მეორედ იგივეზე — 409; TBC Bank-მა (owner) დაინახა განაცხადი და შეცვალა status `InReview`-ზე (200); არასწორი status string → 400; **სხვა** კომპანია (არა owner) → 403 იმავე ვაკანსიის განაცხადებზე წვდომაზე; Person-ს Company-ის endpoint-ებზე წვდომა არ აქვს (403) და პირიქითაც (403); RabbitMQ-ს `publish_in` counter-მა დაადასტურა `ApplicationSubmitted`/`ApplicationStatusChanged` ორივეს გამოქვეყნება.
+
+შემდეგი: **ეტაპი 18 — Notification Service** (RabbitMQ consumer-ები `ApplicationSubmitted`/`ApplicationStatusChanged`-ისთვის).

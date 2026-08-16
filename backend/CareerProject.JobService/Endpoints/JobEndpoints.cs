@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CareerProject.JobService.Auth;
 using CareerProject.JobService.Dtos;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
@@ -31,7 +32,7 @@ public static class JobEndpoints
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
-        var company = await LoadCompany(user, db);
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
         if (company is null)
             return Results.NotFound(new { message = "Company profile not found." });
 
@@ -100,7 +101,7 @@ public static class JobEndpoints
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
-        var company = await LoadCompany(user, db);
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
         if (company is null)
             return Results.NotFound(new { message = "Company profile not found." });
 
@@ -143,7 +144,7 @@ public static class JobEndpoints
 
     private static async Task<IResult> DeleteJob(Guid id, ClaimsPrincipal user, CareerProjectDbContext db)
     {
-        var company = await LoadCompany(user, db);
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
         if (company is null)
             return Results.NotFound(new { message = "Company profile not found." });
 
@@ -158,12 +159,6 @@ public static class JobEndpoints
         await db.SaveChangesAsync();
 
         return Results.NoContent();
-    }
-
-    private static async Task<Company?> LoadCompany(ClaimsPrincipal user, CareerProjectDbContext db)
-    {
-        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub")!);
-        return await db.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
     }
 
     private static async Task<Job?> LoadJob(CareerProjectDbContext db, Guid id) =>

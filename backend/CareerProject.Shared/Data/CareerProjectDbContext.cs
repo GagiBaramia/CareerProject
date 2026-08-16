@@ -92,6 +92,8 @@ public class CareerProjectDbContext : DbContext
 
         modelBuilder.Entity<Application>(entity =>
         {
+            entity.HasIndex(a => new { a.JobId, a.PersonId }).IsUnique();
+
             entity.HasOne(a => a.Job)
                 .WithMany(j => j.Applications)
                 .HasForeignKey(a => a.JobId)
