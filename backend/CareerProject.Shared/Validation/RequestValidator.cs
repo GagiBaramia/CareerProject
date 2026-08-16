@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerProject.UserService.Validation;
+namespace CareerProject.Shared.Validation;
 
 public static class RequestValidator
 {

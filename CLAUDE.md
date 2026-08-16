@@ -80,4 +80,12 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა ბრაუზერში** (Playwright): registration → dashboard → "შეავსე პროფილი" ბმული → wizard-ის შევსება (headline, summary, location, 2 skill + level შეცვლა) → live preview განახლება → შენახვა (`PUT /api/profile/me` + `PUT /api/profile/me/skills`) → step 2 stub-ზე გადასვლა → გვერდის reload → მონაცემები რეალურად შენარჩუნებულია ბაზაში (headline და ორივე skill დადასტურდა).
 
-შემდეგი: **ეტაპი 10 — Company Profile (backend, JobService)**.
+ეტაპი 10 (Company Profile) დასრულებულია და დადასტურებულია: `CareerProject.JobService`-ის პირველი კოდი — `GET/PUT /api/company/me`, მხოლოდ Company role-ისთვის (`CompanyOnly` policy, Person იღებს 403). JWT validation setup იმეორებს ApiGateway-ს პატერნს (მხოლოდ ვალიდაცია, არა გენერაცია — Issuer/Audience `appsettings.json`-ში, secret env var-იდან).
+
+**რეფაქტორი:** `RequestValidator` გავიტანე `CareerProject.UserService`-დან `CareerProject.Shared/Validation/`-ში (ახლა JobService-საც სჭირდებოდა იგივე ლოგიკა) — UserService-იც ახლა საერთო ვერსიას იყენებს, დუბლირების გარეშე.
+
+**Gateway routing bugfix (ისევ):** Task 5-ის routing table-ში `/api/company/*`-იც არ ყოფილა — დავამატე `company-route`.
+
+დადასტურდა Gateway-ის გავლით: GET/PUT company profile, 403 Person-ისთვის, 401 token-ის გარეშე.
+
+შემდეგი: **ეტაპი 11 — Job CRUD**.

@@ -2,7 +2,7 @@ using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.UserService.Auth;
 using CareerProject.UserService.Dtos;
-using CareerProject.UserService.Validation;
+using CareerProject.Shared.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
