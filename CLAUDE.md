@@ -34,6 +34,14 @@ docker/
 docker-compose.yml
 ```
 
+## UI მაკეტები
+
+`docs/mockups/`-ში დევს დამკვეთის მიერ მოწოდებული დიზაინ მაკეტები (თეთრი background, ლურჯი primary accent, „კარიერა" ბრენდი). UI ეტაპებზე (Task 8 — Login/Register, Task 9 — Profile Wizard, Task 12 — Vacancy Creation, Task 16 — Recommendations Dashboard, Task 20 — AI Chat Panel) ვიზუალურად ამ მაკეტებს დაემსგავსე ზუსტად — ფერები, spacing, კომპონენტების განლაგება.
+
+- `profile-wizard.png` — კანდიდატის პროფილის შექმნის multi-step ფორმა (Task 9)
+- `recommendations-dashboard.png` — ვაკანსიების რეკომენდაციები + AI assistant panel (Task 16, Task 20)
+- `job-posting.png` — კომპანიის მიერ ვაკანსიის გამოქვეყნების ფორმა (Task 12)
+
 ## მიმდინარე სტატუსი
 
-ეტაპი 1 დასრულებულია: 6 პროექტი + `.sln`, build succeeds. შემდეგი: **ეტაპი 2 — Docker ინფრასტრუქტურა**.
+ეტაპი 1 დასრულებულია: 6 პროექტი + `.sln`, build succeeds, GitHub-ზეც აიტვირთა. შემდეგი: **ეტაპი 2 — Docker ინფრასტრუქტურა**.
