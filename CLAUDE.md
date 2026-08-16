@@ -106,4 +106,12 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა:** (1) ჩვეულებრივი publish — `publish_in` counter გაიზარდა; (2) **RabbitMQ-ს დროებით გათიშვა** (`docker stop`) — request მაინც 200-ით დაბრუნდა (< 1წმ), log-ში ზუსტად ჩანს 3 მცდელობა (warn→warn→fail), caller არ დაბლოკილა; (3) **აღდგენა** — RabbitMQ-ს ჩართვის შემდეგ publish ისევ იმუშავა ავტომატურად (RabbitMQ.Client-ის built-in connection recovery); (4) **Consumer** — დროებით, ცალკე scratch პროექტში (production კოდში არ შესულა) გავუშვი `RabbitMqConsumerBase<ProfileUpdated>`-ის subclass, რეალურმა `PUT /api/profile/me`-მ გამოაქვეყნა event და consumer-მა წარმატებით მიიღო/დამუშავა — publisher-consumer მთელი ჯაჭვი დადასტურებულია.
 
-შემდეგი: **ეტაპი 14 — CV და Job embedding** (Gemini API, RecommendationService).
+ეტაპი 14 (CV და Job embedding) დასრულებულია და დადასტურებულია: `CareerProject.RecommendationService`-ის პირველი კოდი — `GeminiEmbeddingClient` (`gemini-embedding-001`, `outputDimensionality: 768`, `taskType: RETRIEVAL_DOCUMENT`), `PersonProfileEmbeddingService`/`JobEmbeddingService`, და 4 consumer (`ProfileCreated/Updated`, `JobCreated/Updated`) — Stage 13-ის `RabbitMqConsumerBase`-ზე აგებული, `IServiceScopeFactory`-ით (consumer singleton-ია, DbContext — scoped).
+
+**მნიშვნელოვანი აღმოჩენა:** `text-embedding-004` (რომელსაც Stage 3-ზე ვგულისხმობდი 768-განზომილებიანი embedding-ისთვის) აღარ არსებობს ამ API key-ზე — რეალურმა API-მ აჩვენა, რომ მიმდინარე მოდელია `gemini-embedding-001`, output default 3072განზომილება. `curl`-ით პირდაპირ შემოწმებულმა API call-მა დაადასტურა, რომ `outputDimensionality: 768` პარამეტრი ზუსტად 768-ს აბრუნებს — შესაბამისად Stage 3-ის pgvector სქემა (`vector(768)`) მიგრაციის გარეშე დარჩა ვალიდური.
+
+**რეალურად შემოწმდა (რეალურ Gemini API-ზე, testing key-ით):** (1) `PUT /api/profile/me` → `ProfileUpdated` → consumer-მა Gemini-ს რეალურად მიმართა (HTTP 200, ~630ms) → `PersonProfiles.Embedding` განახლდა, `vector_dims = 768`; (2) იგივე `POST /api/jobs`-ზე → `Jobs.Embedding` განახლდა; (3) **სემანტიკური ხარისხის შემოწმება** — თემატურად მსგავსი პროფილისა და ვაკანსიის (ორივე .NET/PostgreSQL/RabbitMQ) cosine similarity pgvector-ით გამოთვლილმა `0.91` აჩვენა — embedding რეალურად აზრიანად მუშაობს.
+
+**Resilience:** ცალკე live-failure ტესტი აღარ გავიმეორე Gemini-ს გათიშვაზე — consumer-ები იმავე `RabbitMqConsumerBase`-ს იყენებენ, რომლის retry/nack-without-requeue ქცევა Stage 13-ზე უკვე საფუძვლიანად დადასტურდა. არქიტექტურულადაც გარანტირებულია, რომ Gemini-ს failure ვერასდროს შეაფერხებს თავად profile/job-ის შენახვას — embedding მთლიანად ცალკე სერვისში, event-ის მიღების შემდეგ, ცალკე async პროცესშია.
+
+შემდეგი: **ეტაპი 15 — Hybrid Matching** (`0.6 × skill_overlap + 0.4 × semantic_similarity`, `GET /api/recommendations/jobs`).

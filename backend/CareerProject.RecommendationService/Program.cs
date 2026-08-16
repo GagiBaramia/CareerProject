@@ -1,12 +1,28 @@
+using CareerProject.RecommendationService.Consumers;
+using CareerProject.RecommendationService.Services;
+using CareerProject.Shared.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<CareerProjectDbContext>(options =>
+    options.UseNpgsql(PostgresConnectionStringBuilder.BuildFromEnvironment(), o => o.UseVector()));
+
+builder.Services.AddHttpClient<GeminiEmbeddingClient>();
+builder.Services.AddScoped<PersonProfileEmbeddingService>();
+builder.Services.AddScoped<JobEmbeddingService>();
+
+// Embedding is a background side effect of profile/job saves in other
+// services - these consumers never block the original HTTP request.
+builder.Services.AddHostedService<ProfileCreatedConsumer>();
+builder.Services.AddHostedService<ProfileUpdatedConsumer>();
+builder.Services.AddHostedService<JobCreatedConsumer>();
+builder.Services.AddHostedService<JobUpdatedConsumer>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -14,28 +30,4 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
