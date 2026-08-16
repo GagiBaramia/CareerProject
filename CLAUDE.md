@@ -56,4 +56,8 @@ docker-compose.yml
 
 JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET Core-ის config section syntax), Issuer/Audience/ExpiryMinutes — `appsettings.json`-ში (არასაიდუმლო). `CareerProject.Shared`-ში დაემატა `PostgresConnectionStringBuilder` — connection string აწყობის საერთო ლოგიკა, გამოიყენება migration factory-იც და UserService-იც.
 
-შემდეგი: **ეტაპი 5 — API Gateway**.
+ეტაპი 5 (API Gateway) დასრულებულია და დადასტურებულია: `CareerProject.ApiGateway` YARP-ით (`Yarp.ReverseProxy`) — routing `appsettings.json`-ის `ReverseProxy` სექციაში (`/api/auth/*` public, `/api/users|jobs|applications|recommendations|ai|notifications/*` მოითხოვს JWT-ს Gateway-ის დონეზე, `AuthorizationPolicy: authenticated`). CORS `localhost:4200`-ისთვის. დადასტურდა რეალურად გაშვებით: login `/api/auth/*`-ზე token-ის გარეშე გაეშვა (200), protected route token-ის გარეშე — 401 Gateway-მაც უარყო, token-ით — 502 (რადგან JobService ჯერ არ არსებობს, Stage 11-მდე), CORS preflight დადასტურდა.
+
+**შენიშვნა:** Gateway-ს ცალკე `Jwt` config აქვს (`appsettings.json`: Issuer/Audience, იგივე მნიშვნელობები რაც UserService-ს — უნდა ემთხვეოდეს, რომ token validation იმუშაოს), იმავე `Jwt__Secret` env var-ს იყენებს. განზრახ არ გავიტანე `CareerProject.Shared`-ში, რომ Task 4-ის უკვე დასრულებული/დატესტილი UserService კოდი არ შემეხო.
+
+შემდეგი: **ეტაპი 6 — Skills dictionary**.
