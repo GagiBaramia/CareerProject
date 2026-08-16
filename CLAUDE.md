@@ -52,4 +52,8 @@ docker-compose.yml
 
 **შენიშვნა:** ამ მანქანაზე ცალკე ნატიური PostgreSQL 18 Windows service დგას (`postgresql-x64-18`), რომელიც პორტ 5432-ს იკავებს — ამიტომ Docker-ის PostgreSQL კონტეინერი host-პორტ `5433`-ზეა გადატანილი (`.env`/`.env.example`, `POSTGRES_PORT=5433`), რომ კონფლიქტი არ მოხდეს. `dotnet ef` ბრძანებები `CareerProject.Shared`-იდან უნდა გაეშვას, connection info მხოლოდ environment variables-იდან იკითხება (`CareerProjectDbContextFactory`), არასოდეს hardcoded.
 
-შემდეგი: **ეტაპი 4 — ავტორიზაცია (UserService: register/login, JWT)**.
+ეტაპი 4 (ავტორიზაცია) დასრულებულია და დადასტურებულია: `CareerProject.UserService`-ში `POST /api/auth/register/person`, `POST /api/auth/register/company`, `POST /api/auth/login` — JWT (role claim-ით), `PasswordHasher<User>` პაროლის hash-ისთვის (plaintext არასოდეს), DataAnnotations validation, სწორი status code-ები (201/200/401/409). Swagger UI ხელმისაწვდომია `/swagger`-ზე (dev-ში). ყველა endpoint რეალურად გაეშვა და დატესტილია (`dotnet run` + curl) რეალურ Docker Postgres-ზე.
+
+JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET Core-ის config section syntax), Issuer/Audience/ExpiryMinutes — `appsettings.json`-ში (არასაიდუმლო). `CareerProject.Shared`-ში დაემატა `PostgresConnectionStringBuilder` — connection string აწყობის საერთო ლოგიკა, გამოიყენება migration factory-იც და UserService-იც.
+
+შემდეგი: **ეტაპი 5 — API Gateway**.
