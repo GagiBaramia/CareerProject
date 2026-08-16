@@ -46,6 +46,6 @@ docker-compose.yml
 
 ეტაპი 1 დასრულებულია: 6 პროექტი + `.sln`, build succeeds, GitHub-ზეც აიტვირთა.
 
-ეტაპი 2 (Docker) — `docker-compose.yml`, `.env.example`, `docker/postgres/init.sql` (pgvector extension) მზადაა, მაგრამ **გაშვება ვერ შემოწმდა** — ამ მანქანაზე Docker Desktop არ არის დაინსტალირებული. მომხმარებელმა თავად უნდა გაუშვას `docker compose up -d` და დაადასტუროს Acceptance criteria (PLAN.md, ეტაპი 2) დასრულებამდე გადასვლისას.
+ეტაპი 2 (Docker) დასრულებულია და დადასტურებულია: `docker compose up -d` გაშვებულია, PostgreSQL/Redis/RabbitMQ ყველა healthy, pgvector extension ჩატვირთულია, RabbitMQ Management UI ხელმისაწვდომია (`localhost:15672`).
 
-შემდეგი: **ეტაპი 3 — მონაცემთა ბაზის მოდელი (EF Core entities)**, მას შემდეგ რაც Docker infrastructure დადასტურდება.
+შემდეგი: **ეტაპი 3 — მონაცემთა ბაზის მოდელი (EF Core entities)**.

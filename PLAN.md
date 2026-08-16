@@ -99,11 +99,11 @@ AI prompt:
 
 **Acceptance criteria:**
 
-* [ ] PostgreSQL მუშაობს
-* [ ] pgvector ჩაიტვირთა
-* [ ] Redis მუშაობს
-* [ ] RabbitMQ მუშაობს
-* [ ] RabbitMQ Management UI იხსნება
+* [x] PostgreSQL მუშაობს
+* [x] pgvector ჩაიტვირთა
+* [x] Redis მუშაობს
+* [x] RabbitMQ მუშაობს
+* [x] RabbitMQ Management UI იხსნება
 
 ---
 
