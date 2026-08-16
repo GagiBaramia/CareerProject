@@ -114,4 +114,12 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **Resilience:** ცალკე live-failure ტესტი აღარ გავიმეორე Gemini-ს გათიშვაზე — consumer-ები იმავე `RabbitMqConsumerBase`-ს იყენებენ, რომლის retry/nack-without-requeue ქცევა Stage 13-ზე უკვე საფუძვლიანად დადასტურდა. არქიტექტურულადაც გარანტირებულია, რომ Gemini-ს failure ვერასდროს შეაფერხებს თავად profile/job-ის შენახვას — embedding მთლიანად ცალკე სერვისში, event-ის მიღების შემდეგ, ცალკე async პროცესშია.
 
-შემდეგი: **ეტაპი 15 — Hybrid Matching** (`0.6 × skill_overlap + 0.4 × semantic_similarity`, `GET /api/recommendations/jobs`).
+ეტაპი 15 (Hybrid Matching) დასრულებულია და დადასტურებულია: `GET /api/recommendations/jobs` `CareerProject.RecommendationService`-ში, `PersonOnly` policy (Company → 403). `HybridMatchingCalculator` — სუფთა, DB-isგან დამოუკიდებელი კლასი (`CalculateSkillOverlap`, `CalculateScore`) `Services/`-ში, 11 unit test-ით დაფარული (`CareerProject.RecommendationService.Tests`, ახალი პროექტი, დამატებულია `.sln`-ში). წონები (`StructuredWeight=0.6`, `SemanticWeight=0.4`) `appsettings.json`-ის `Recommendation` სექციაშია, არა hardcoded.
+
+**Semantic similarity — რეალურად pgvector-ის `<=>` ოპერატორით, server-side:** `Vector.CosineDistance()` (Pgvector.EntityFrameworkCore-ის instance extension method) LINQ query-ში გამოყენებულმა წარმატებით ითარგმნა SQL-ში — ლოგში დავადასტურე: `CASE WHEN j."Embedding" IS NULL THEN 0.0 ELSE 1.0 - (j."Embedding" <=> @__personEmbedding_0) END`. embedding-ის არარსებობის შემთხვევაში (person ან job) — semanticSimilarity ნაგულისხმევად 0, request არ ინგრევა.
+
+**Skill overlap-ის განსაზღვრება:** `matchedRequiredSkills / totalRequiredSkills`; 0 required skill → overlap = 1.0 (არაფერია რისი არშეთავსებაც, სამართლიანი დეფოლტი skill-agnostic ვაკანსიებისთვის).
+
+**რეალურად შემოწმდა Gateway-ის გვერდის ავლით, პირდაპირ სერვისზე:** score-ები ხელით გამოთვლას ემთხვევა ორივე შემთხვევაში (embedding-იანი job: `0.6×1 + 0.4×0.913 = 0.965`; embedding-ის გარეშე: `0.6×0.5 + 0.4×0 = 0.3`), დალაგება score-ის კლებადობით სწორია, ახალ Person-ს embedding-ის გარეშეც (fallback branch) სწორად უბრუნებს მხოლოდ skill-overlap-ზე დაფუძნებულ score-ს, Company/token-ის გარეშე — 403/401.
+
+შემდეგი: **ეტაპი 16 — Recommendations UI** (`docs/mockups/recommendations-dashboard.png`-ს დაეყრდნობა).

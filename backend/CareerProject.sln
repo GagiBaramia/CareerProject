@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerProject.NotificationS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerProject.Shared", "CareerProject.Shared\CareerProject.Shared.csproj", "{2B7E67A8-0924-4FF7-B4DB-2594F03ACF39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerProject.RecommendationService.Tests", "CareerProject.RecommendationService.Tests\CareerProject.RecommendationService.Tests.csproj", "{675350CA-CFEC-4292-A933-3DBA679BAD81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{2B7E67A8-0924-4FF7-B4DB-2594F03ACF39}.Release|x64.Build.0 = Release|Any CPU
 		{2B7E67A8-0924-4FF7-B4DB-2594F03ACF39}.Release|x86.ActiveCfg = Release|Any CPU
 		{2B7E67A8-0924-4FF7-B4DB-2594F03ACF39}.Release|x86.Build.0 = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|x64.Build.0 = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Debug|x86.Build.0 = Debug|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|x64.ActiveCfg = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|x64.Build.0 = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|x86.ActiveCfg = Release|Any CPU
+		{675350CA-CFEC-4292-A933-3DBA679BAD81}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
