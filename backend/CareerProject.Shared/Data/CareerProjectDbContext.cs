@@ -47,6 +47,7 @@ public class CareerProjectDbContext : DbContext
         modelBuilder.Entity<Skill>(entity =>
         {
             entity.HasIndex(s => s.Name).IsUnique();
+            entity.HasData(SkillSeedData.Skills);
         });
 
         modelBuilder.Entity<PersonSkill>(entity =>

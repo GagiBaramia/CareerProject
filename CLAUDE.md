@@ -60,4 +60,8 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **შენიშვნა:** Gateway-ს ცალკე `Jwt` config აქვს (`appsettings.json`: Issuer/Audience, იგივე მნიშვნელობები რაც UserService-ს — უნდა ემთხვეოდეს, რომ token validation იმუშაოს), იმავე `Jwt__Secret` env var-ს იყენებს. განზრახ არ გავიტანე `CareerProject.Shared`-ში, რომ Task 4-ის უკვე დასრულებული/დატესტილი UserService კოდი არ შემეხო.
 
-შემდეგი: **ეტაპი 6 — Skills dictionary**.
+ეტაპი 6 (Skills dictionary) დასრულებულია და დადასტურებულია: 19 skill (`SkillSeedData`, fixed GUIDs) `HasData()`-ით `CareerProject.Shared`-ის `Skill` entity-ზე, `SeedSkills` migration გატარებულია. `GET /api/skills` და `GET /api/skills?search=` `CareerProject.UserService`-ში (`EF.Functions.ILike`, case-insensitive) — დადასტურდა პირდაპირ და Gateway-ის გავლითაც (public route, ავტორიზაცია არ სჭირდება).
+
+**შენიშვნა:** Task 5-ის Gateway routing table-ში `/api/skills` საერთოდ არ ყოფილა გათვალისწინებული — დავამატე `skills-route` (`appsettings.json`, `CareerProject.ApiGateway`), თორემ Angular ამ endpoint-ს Gateway-ის გავლით ვერასდროს მიაღწევდა.
+
+შემდეგი: **ეტაპი 7 — Person Profile API**.
