@@ -44,4 +44,8 @@ docker-compose.yml
 
 ## მიმდინარე სტატუსი
 
-ეტაპი 1 დასრულებულია: 6 პროექტი + `.sln`, build succeeds, GitHub-ზეც აიტვირთა. შემდეგი: **ეტაპი 2 — Docker ინფრასტრუქტურა**.
+ეტაპი 1 დასრულებულია: 6 პროექტი + `.sln`, build succeeds, GitHub-ზეც აიტვირთა.
+
+ეტაპი 2 (Docker) — `docker-compose.yml`, `.env.example`, `docker/postgres/init.sql` (pgvector extension) მზადაა, მაგრამ **გაშვება ვერ შემოწმდა** — ამ მანქანაზე Docker Desktop არ არის დაინსტალირებული. მომხმარებელმა თავად უნდა გაუშვას `docker compose up -d` და დაადასტუროს Acceptance criteria (PLAN.md, ეტაპი 2) დასრულებამდე გადასვლისას.
+
+შემდეგი: **ეტაპი 3 — მონაცემთა ბაზის მოდელი (EF Core entities)**, მას შემდეგ რაც Docker infrastructure დადასტურდება.
