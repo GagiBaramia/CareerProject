@@ -1,7 +1,9 @@
 using System.Text;
 using CareerProject.Shared.Data;
+using CareerProject.Shared.Entities;
 using CareerProject.UserService.Auth;
 using CareerProject.UserService.Endpoints;
+using CareerProject.UserService.Events;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +37,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("PersonOnly", policy => policy.RequireRole(UserRole.Person.ToString()));
+});
+
+builder.Services.AddSingleton<ProfileEventPublisher>();
 
 var app = builder.Build();
 
@@ -56,5 +63,6 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 app.MapSkillsEndpoints();
+app.MapProfileEndpoints();
 
 app.Run();

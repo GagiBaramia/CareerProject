@@ -64,4 +64,10 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **შენიშვნა:** Task 5-ის Gateway routing table-ში `/api/skills` საერთოდ არ ყოფილა გათვალისწინებული — დავამატე `skills-route` (`appsettings.json`, `CareerProject.ApiGateway`), თორემ Angular ამ endpoint-ს Gateway-ის გავლით ვერასდროს მიაღწევდა.
 
-შემდეგი: **ეტაპი 7 — Person Profile API**.
+ეტაპი 7 (Person Profile API) დასრულებულია და დადასტურებულია: `CareerProject.UserService`-ში `GET/PUT /api/profile/me`, `PUT /api/profile/me/skills` — მხოლოდ `Person` role-ისთვის (`PersonOnly` authorization policy, Company იღებს 403). Skills-ის replace ვალიდაციით (unknown skill id / არასწორი proficiency level → 400). `PersonSkill.Level` გადავიდა `int`-დან `ProficiencyLevel` enum-ზე (Beginner/Intermediate/Advanced/Expert) — `CareerProject.Shared`, ცარიელი migration (enum ისედაც `int`-ად ინახება ბაზაში).
+
+**RabbitMQ:** `ProfileCreated`/`ProfileUpdated` მინიმალურად, პირდაპირ ქვეყნდება (`ProfileEventPublisher`, topic exchange `career_project.events`) — არა სრული Stage 13-ის publisher/consumer abstraction, რომელიც ეს მინიმალური ვერსია მომავალში ჩაანაცვლებს ყველა სერვისისთვის. `ProfileCreated` იგზავნება პირველი "რეალური" შევსებისას (`Headline` null→non-null), შემდეგ ყველა edit — `ProfileUpdated` (რადგან `PersonProfile` row უკვე რეგისტრაციისას იქმნება Stage 4-დან, "ახალი vs არსებული" გარჩევა ამ heuristic-ით გავაკეთე). დადასტურდა RabbitMQ Management API-დან (`publish_in` counter).
+
+**რეფაქტორი:** `AuthEndpoints`-სა და `ProfileEndpoints`-ს შორის დუბლირებული `TryValidate` helper გავიტანე `CareerProject.UserService/Validation/RequestValidator.cs`-ში.
+
+შემდეგი: **ეტაპი 8 — Angular Login/Register UI**.

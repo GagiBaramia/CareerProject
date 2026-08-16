@@ -1,8 +1,8 @@
-using System.ComponentModel.DataAnnotations;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.UserService.Auth;
 using CareerProject.UserService.Dtos;
+using CareerProject.UserService.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +24,7 @@ public static class AuthEndpoints
         CareerProjectDbContext db,
         JwtTokenService tokenService)
     {
-        if (!TryValidate(request, out var errors))
+        if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
@@ -67,7 +67,7 @@ public static class AuthEndpoints
         CareerProjectDbContext db,
         JwtTokenService tokenService)
     {
-        if (!TryValidate(request, out var errors))
+        if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
@@ -110,7 +110,7 @@ public static class AuthEndpoints
         CareerProjectDbContext db,
         JwtTokenService tokenService)
     {
-        if (!TryValidate(request, out var errors))
+        if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
 
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
@@ -139,19 +139,5 @@ public static class AuthEndpoints
             Role = user.Role.ToString(),
             DisplayName = displayName,
         });
-    }
-
-    private static bool TryValidate<T>(T request, out IDictionary<string, string[]> errors) where T : notnull
-    {
-        var context = new ValidationContext(request);
-        var results = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(request, context, results, validateAllProperties: true);
-
-        errors = results
-            .SelectMany(r => r.MemberNames.DefaultIfEmpty(string.Empty).Select(m => (Member: m, r.ErrorMessage)))
-            .GroupBy(x => x.Member)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.ErrorMessage ?? "Invalid value.").ToArray());
-
-        return isValid;
     }
 }
