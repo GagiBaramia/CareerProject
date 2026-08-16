@@ -1,0 +1,49 @@
+<div class="skills-field">
+  <div class="skills-input-wrap">
+    <input
+      type="text"
+      class="field-input"
+      placeholder="მოძებნეთ და დაამატეთ უნარი..."
+      [ngModel]="query()"
+      (ngModelChange)="onQueryChange($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+
+    @if (isOpen() && suggestions().length > 0) {
+      <ul class="suggestions">
+        @for (skill of suggestions(); track skill.id) {
+          <li>
+            <button type="button" class="suggestion-item" (mousedown)="addSkill(skill)">
+              {{ skill.name }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  @if (selected.length > 0) {
+    <div class="selected-skills">
+      @for (skill of selected; track skill.skillId) {
+        <div class="selected-skill-row">
+          <span class="selected-skill-name">{{ skill.skillName }}</span>
+          <select
+            class="level-select"
+            [ngModel]="skill.level"
+            (ngModelChange)="updateLevel(skill.skillId, $event)"
+          >
+            @for (level of levels; track level.value) {
+              <option [value]="level.value">{{ level.label }}</option>
+            }
+          </select>
+          <button type="button" class="remove-btn" (click)="removeSkill(skill.skillId)" aria-label="წაშლა">
+            ✕
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="no-skills-hint">ჯერ არცერთი უნარი არ დაგიმატებიათ</p>
+  }
+</div>

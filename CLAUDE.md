@@ -74,4 +74,10 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა ბრაუზერში** (Playwright, headless Chromium — `chromium-cli` ამ მანქანაზე არ იყო, alternative driver დავწერე): login/register გვერდები ვიზუალურად, registration → redirect → dashboard, logout+login round-trip, არასწორი პაროლის error state. Console errors — მხოლოდ მოსალოდნელი 401 (wrong-password ტესტიდან).
 
-შემდეგი: **ეტაპი 9 — Profile Wizard UI** (`docs/mockups/profile-wizard.png`-ს დაეყრდნობა უშუალოდ — ჯერ არ აიტვირთა).
+ეტაპი 9 (Profile Wizard UI) დასრულებულია და დადასტურებულია: `/profile/edit` — 4-ნაბიჯიანი step indicator, **მხოლოდ ნაბიჯი 1 რეალურად ფუნქციური** (Full name, Headline, Summary, Location, Skills+level) — ნაბიჯები 2-4 (გამოცდილება/განათლება/დამატებითი) ვიზუალური placeholder-ებია, რადგან ამ მონაცემებისთვის backend-ში entity საერთოდ არ არსებობს (Task 3-ის მოდელს Experience/Education არ აქვს) — ეს პირდაპირ Task 9-ის საკუთარი ტექსტიდან გამომდინარეობს ("პირველ რეალიზაციაში აუცილებელია" სია). `SkillsAutocompleteComponent` (debounced search, chip-ისმაგვარი წაშლადი skill-ები, proficiency dropdown) და მარჯვნივ **რეალურ დროში განახლებადი Profile Preview**. `docs/mockups/profile-wizard.png` ჯერ არ აიტვირთა — დიზაინი აშენდა ადრე ნანახი screenshot-ის მეხსიერებით (თეთრი/ლურჯი, "კარიერა" ბრენდი, ორსვეტიანი layout).
+
+**გადახრა მაკეტიდან:** მაკეტს ჰქონდა ცალკე "სახელი | გვარი" ველები — ჩვენი backend-ის `PersonProfile.FullName` კი ერთი ველია (Task 3/7-დან), ამიტომ ერთი "სრული სახელი" ველი გავაკეთე, API კონტრაქტის შესაბამისად.
+
+**რეალურად შემოწმდა ბრაუზერში** (Playwright): registration → dashboard → "შეავსე პროფილი" ბმული → wizard-ის შევსება (headline, summary, location, 2 skill + level შეცვლა) → live preview განახლება → შენახვა (`PUT /api/profile/me` + `PUT /api/profile/me/skills`) → step 2 stub-ზე გადასვლა → გვერდის reload → მონაცემები რეალურად შენარჩუნებულია ბაზაში (headline და ორივე skill დადასტურდა).
+
+შემდეგი: **ეტაპი 10 — Company Profile (backend, JobService)**.

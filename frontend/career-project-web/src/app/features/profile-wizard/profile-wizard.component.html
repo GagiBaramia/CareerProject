@@ -1,0 +1,130 @@
+<div class="wizard-page">
+  <header class="brand-header">
+    <div class="brand">
+      <span class="brand-icon">💼</span>
+      <span class="brand-name">კარიერა</span>
+    </div>
+    <button type="button" class="link-btn" (click)="cancel()">← უკან</button>
+  </header>
+
+  @if (isLoading()) {
+    <main class="wizard-content">
+      <p>იტვირთება...</p>
+    </main>
+  } @else {
+    <main class="wizard-content">
+      <h1 class="page-title">პროფილის შექმნა</h1>
+
+      <ol class="step-indicator">
+        @for (s of steps; track s.step) {
+          <li class="step-item" [class.active]="currentStep() === s.step" [class.done]="currentStep() > s.step">
+            <button
+              type="button"
+              class="step-circle"
+              [disabled]="s.step !== 1"
+              (click)="goToStep(s.step)"
+            >
+              {{ s.step }}
+            </button>
+            <span class="step-label">{{ s.label }}</span>
+          </li>
+        }
+      </ol>
+
+      <div class="wizard-grid">
+        <section class="form-card">
+          @if (currentStep() === 1) {
+            <h2 class="card-title">პირადი ინფორმაცია</h2>
+            <p class="card-subtitle">შეავსეთ საბაზისო ინფორმაცია შენი პროფილისთვის.</p>
+
+            <form [formGroup]="form" (ngSubmit)="submitStepOne()" class="wizard-form">
+              <label class="field">
+                <span class="field-label">სრული სახელი</span>
+                <input type="text" formControlName="fullName" class="field-input" />
+                @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+                  <span class="field-error">სახელი აუცილებელია</span>
+                }
+              </label>
+
+              <label class="field">
+                <span class="field-label">პროფესიული სათაური (Headline)</span>
+                <input
+                  type="text"
+                  formControlName="headline"
+                  class="field-input"
+                  maxlength="120"
+                  placeholder="მაგ. Backend Developer | .NET"
+                />
+                <span class="char-counter">{{ headlineLength }} / 120</span>
+              </label>
+
+              <label class="field">
+                <span class="field-label">მოგვიყევით თქვენს შესახებ (Summary)</span>
+                <textarea
+                  formControlName="cvSummary"
+                  class="field-input field-textarea"
+                  maxlength="600"
+                  rows="4"
+                ></textarea>
+                <span class="char-counter">{{ summaryLength }} / 600</span>
+              </label>
+
+              <label class="field">
+                <span class="field-label">მდებარეობა</span>
+                <input type="text" formControlName="location" class="field-input" placeholder="თბილისი, საქართველო" />
+              </label>
+
+              <div class="field">
+                <span class="field-label">უნარები</span>
+                <app-skills-autocomplete [selected]="skills()" (selectedChange)="onSkillsChange($event)" />
+              </div>
+
+              @if (errorMessage()) {
+                <div class="form-error">{{ errorMessage() }}</div>
+              }
+
+              <div class="form-actions">
+                <button type="button" class="btn-outline" (click)="cancel()">გაუქმება</button>
+                <button type="submit" class="btn-primary" [disabled]="isSaving()">
+                  {{ isSaving() ? 'ინახება...' : 'შემდეგი →' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <h2 class="card-title">{{ steps[currentStep() - 1].label }}</h2>
+            <p class="card-subtitle">ეს ეტაპი მალე დაემატება.</p>
+            <button type="button" class="btn-outline" (click)="goToStep(1)">← წინა ეტაპზე დაბრუნება</button>
+          }
+        </section>
+
+        <aside class="preview-card">
+          <h3 class="preview-title">პროფილის გადახედვა</h3>
+          <p class="preview-subtitle">აი ასე ჩანს შენი პროფილი.</p>
+
+          <div class="preview-avatar">{{ form.controls.fullName.value?.charAt(0) || '?' }}</div>
+          <div class="preview-name">{{ form.controls.fullName.value || 'სახელი გვარი' }}</div>
+
+          @if (form.controls.headline.value) {
+            <div class="preview-headline">{{ form.controls.headline.value }}</div>
+          }
+
+          @if (form.controls.location.value) {
+            <div class="preview-location">📍 {{ form.controls.location.value }}</div>
+          }
+
+          @if (form.controls.cvSummary.value) {
+            <div class="preview-summary">{{ form.controls.cvSummary.value }}</div>
+          }
+
+          @if (skills().length > 0) {
+            <div class="preview-skills">
+              @for (skill of skills(); track skill.skillId) {
+                <span class="preview-skill-badge">{{ skill.skillName }}</span>
+              }
+            </div>
+          }
+        </aside>
+      </div>
+    </main>
+  }
+</div>

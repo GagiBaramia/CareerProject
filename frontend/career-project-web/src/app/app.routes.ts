@@ -21,6 +21,14 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'profile/edit',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile-wizard/profile-wizard.component').then(
+        (m) => m.ProfileWizardComponent
+      )
+  },
+  {
     path: 'dashboard/company',
     canActivate: [authGuard],
     loadComponent: () =>

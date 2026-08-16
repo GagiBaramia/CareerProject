@@ -1,0 +1,105 @@
+.skills-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skills-input-wrap {
+  position: relative;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.suggestions {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.selected-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selected-skill-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.selected-skill-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.level-select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--color-surface);
+}
+
+.remove-btn {
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.remove-btn:hover {
+  color: var(--color-danger);
+}
+
+.no-skills-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
