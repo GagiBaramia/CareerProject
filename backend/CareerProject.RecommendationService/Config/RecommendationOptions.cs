@@ -6,4 +6,5 @@ public class RecommendationOptions
 
     public double StructuredWeight { get; set; }
     public double SemanticWeight { get; set; }
+    public int CacheTtlSeconds { get; set; }
 }

@@ -1,3 +1,4 @@
+using CareerProject.RecommendationService.Caching;
 using CareerProject.RecommendationService.Services;
 using CareerProject.Shared.Events;
 using CareerProject.Shared.Messaging;
@@ -15,7 +16,11 @@ public class ProfileUpdatedConsumer(IServiceScopeFactory scopeFactory, ILogger<P
     protected override async Task HandleAsync(ProfileUpdated @event, CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
+
         var service = scope.ServiceProvider.GetRequiredService<PersonProfileEmbeddingService>();
         await service.RecomputeAsync(@event.EntityId, cancellationToken);
+
+        var cache = scope.ServiceProvider.GetRequiredService<IRecommendationCache>();
+        await cache.InvalidateAsync(@event.EntityId, cancellationToken);
     }
 }

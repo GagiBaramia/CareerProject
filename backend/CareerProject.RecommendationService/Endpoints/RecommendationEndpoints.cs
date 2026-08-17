@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CareerProject.RecommendationService.Caching;
 using CareerProject.RecommendationService.Config;
 using CareerProject.RecommendationService.Dtos;
 using CareerProject.RecommendationService.Services;
@@ -24,16 +25,22 @@ public static class RecommendationEndpoints
     private static async Task<IResult> GetRecommendedJobs(
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        IOptions<RecommendationOptions> options)
+        IOptions<RecommendationOptions> options,
+        IRecommendationCache cache,
+        CancellationToken cancellationToken)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub")!);
 
         var profile = await db.PersonProfiles
             .Include(p => p.PersonSkills)
-            .FirstOrDefaultAsync(p => p.UserId == userId);
+            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
 
         if (profile is null)
             return Results.NotFound(new { message = "Person profile not found." });
+
+        var cached = await cache.GetAsync(profile.Id, cancellationToken);
+        if (cached is not null)
+            return Results.Ok(cached);
 
         var personSkillIds = profile.PersonSkills.Select(ps => ps.SkillId).ToHashSet();
         var jobsWithSimilarity = await LoadJobsWithSimilarity(db, profile.Embedding);
@@ -51,6 +58,8 @@ public static class RecommendationEndpoints
             })
             .OrderByDescending(r => r.Score)
             .ToList();
+
+        await cache.SetAsync(profile.Id, results, cancellationToken);
 
         return Results.Ok(results);
     }

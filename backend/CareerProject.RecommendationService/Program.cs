@@ -1,4 +1,5 @@
 using System.Text;
+using CareerProject.RecommendationService.Caching;
 using CareerProject.RecommendationService.Config;
 using CareerProject.RecommendationService.Consumers;
 using CareerProject.RecommendationService.Endpoints;
@@ -8,6 +9,7 @@ using CareerProject.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,13 @@ builder.Services.AddHttpClient<GeminiChatClient>();
 builder.Services.AddScoped<PersonProfileEmbeddingService>();
 builder.Services.AddScoped<JobEmbeddingService>();
 builder.Services.AddScoped<AiChatService>();
+
+// abortConnect=false (in RedisConnectionFactory) means this succeeds even if Redis is
+// down at boot - IRecommendationCache/IAiChatRateLimiter catch failures on every call,
+// so job browsing and AI chat degrade gracefully instead of failing.
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => RedisConnectionFactory.Connect());
+builder.Services.AddScoped<IRecommendationCache, RedisRecommendationCache>();
+builder.Services.AddScoped<IAiChatRateLimiter, RedisAiChatRateLimiter>();
 
 // Embedding is a background side effect of profile/job saves in other
 // services - these consumers never block the original HTTP request.
