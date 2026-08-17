@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
@@ -24,7 +24,7 @@ const STEPS: WizardStep[] = [
 @Component({
   selector: 'app-profile-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, SkillsAutocompleteComponent, AvatarComponent],
+  imports: [ReactiveFormsModule, RouterLink, SkillsAutocompleteComponent, AvatarComponent],
   templateUrl: './profile-wizard.component.html',
   styleUrl: './profile-wizard.component.css'
 })

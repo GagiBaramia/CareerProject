@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { JobService } from '../../../core/services/job.service';
 import { CURRENCIES, EMPLOYMENT_TYPES, WORK_FORMATS } from '../../../core/models/job.models';
@@ -17,7 +17,7 @@ const RECENT_CANDIDATES_EXAMPLE = [
 @Component({
   selector: 'app-job-create',
   standalone: true,
-  imports: [ReactiveFormsModule, SkillsAutocompleteComponent],
+  imports: [ReactiveFormsModule, RouterLink, SkillsAutocompleteComponent],
   templateUrl: './job-create.component.html',
   styleUrl: './job-create.component.css'
 })

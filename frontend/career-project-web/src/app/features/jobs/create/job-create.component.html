@@ -1,9 +1,9 @@
 <div class="page">
   <header class="brand-header">
-    <div class="brand">
+    <a [routerLink]="auth.dashboardRouteForCurrentRole()" class="brand">
       <span class="brand-icon">💼</span>
       <span class="brand-name">კარიერა</span>
-    </div>
+    </a>
     <button type="button" class="link-btn" (click)="cancel()">← უკან</button>
   </header>
 

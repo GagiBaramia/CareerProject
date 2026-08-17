@@ -1,8 +1,8 @@
 <aside class="sidebar">
-  <div class="sidebar-brand">
+  <a [routerLink]="auth.dashboardRouteForCurrentRole()" class="sidebar-brand">
     <span class="brand-icon">💼</span>
     <span class="brand-name">კარიერა</span>
-  </div>
+  </a>
 
   <nav class="sidebar-nav">
     @if (!isCompany()) {

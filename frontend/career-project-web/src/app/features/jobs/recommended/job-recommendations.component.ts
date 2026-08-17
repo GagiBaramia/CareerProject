@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { RecommendationService } from '../../../core/services/recommendation.service';
 import { AiChatService } from '../../../core/services/ai-chat.service';
@@ -13,7 +14,7 @@ type SortOrder = 'desc' | 'asc';
 @Component({
   selector: 'app-job-recommendations',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './job-recommendations.component.html',
   styleUrl: './job-recommendations.component.css'
 })
