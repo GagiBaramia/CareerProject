@@ -26,6 +26,26 @@ docker-compose.yml
 
 ## გაშვება (development)
 
+### სწრაფი გაშვება — ერთი ბრძანებით
+
+`.env`-ის ერთხელ მომზადების შემდეგ (იხ. ქვემოთ, "1. Infrastructure"), მთელი გარემო — Docker infra + 5 backend service + Angular — ერთბაშად შეგიძლია გაუშვა:
+
+```
+start-dev.bat
+```
+
+(ორჯერ-დაწკაპუნებით Explorer-ში, ან ტერმინალიდან). თითოეული service ცალკე ტერმინალის ფანჯარაში იხსნება (log-ების სანახავად), ბრაუზერიც ავტომატურად იხსნება `localhost:4200`-ზე. ერთი service-ის გასაჩერებლად უბრალოდ დახურე მისი ფანჯარა.
+
+ყველას ერთდროულად გასაჩერებლად:
+
+```
+stop-dev.bat
+```
+
+(Docker infra ცალკე რჩება გაშვებული — `docker compose down`, თუ ისიც გინდა გაჩერდეს).
+
+### ხელით გაშვება (დეტალურად, ეტაპობრივად)
+
 ### 1. Infrastructure (PostgreSQL + pgvector, Redis, RabbitMQ)
 
 დაგჭირდება [Docker Desktop](https://www.docker.com/products/docker-desktop/).
