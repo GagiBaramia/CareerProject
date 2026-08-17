@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
+import { UploadService } from '../../core/services/upload.service';
 import { ProfileSkill } from '../../core/models/profile.models';
 import { SkillsAutocompleteComponent } from '../../shared/components/skills-autocomplete/skills-autocomplete.component';
+import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 
 interface WizardStep {
   step: number;
@@ -22,13 +24,14 @@ const STEPS: WizardStep[] = [
 @Component({
   selector: 'app-profile-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, SkillsAutocompleteComponent],
+  imports: [ReactiveFormsModule, SkillsAutocompleteComponent, AvatarComponent],
   templateUrl: './profile-wizard.component.html',
   styleUrl: './profile-wizard.component.css'
 })
 export class ProfileWizardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
+  private readonly uploadService = inject(UploadService);
   private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
@@ -38,6 +41,10 @@ export class ProfileWizardComponent implements OnInit {
   readonly isSaving = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly skills = signal<ProfileSkill[]>([]);
+
+  readonly photoUrl = signal<string | null>(null);
+  readonly isUploadingPhoto = signal(false);
+  readonly photoError = signal<string | null>(null);
 
   readonly form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(1)]],
@@ -64,6 +71,7 @@ export class ProfileWizardComponent implements OnInit {
           location: profile.location ?? ''
         });
         this.skills.set(profile.skills);
+        this.photoUrl.set(profile.photoUrl);
         this.isLoading.set(false);
       },
       error: () => {
@@ -75,6 +83,27 @@ export class ProfileWizardComponent implements OnInit {
 
   onSkillsChange(next: ProfileSkill[]): void {
     this.skills.set(next);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.isUploadingPhoto.set(true);
+    this.photoError.set(null);
+
+    this.uploadService.uploadPhoto(file).subscribe({
+      next: (result) => {
+        this.photoUrl.set(result.photoUrl);
+        this.isUploadingPhoto.set(false);
+      },
+      error: (err) => {
+        this.photoError.set(err.error?.message || 'ფოტოს ატვირთვისას მოხდა შეცდომა.');
+        this.isUploadingPhoto.set(false);
+      }
+    });
   }
 
   goToStep(step: number): void {

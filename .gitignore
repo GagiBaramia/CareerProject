@@ -4,6 +4,9 @@ obj/
 *.user
 .vs/
 
+# ---- Uploaded files (local dev storage - see LocalFileStorage) ----
+backend/*/wwwroot/uploads/
+
 # ---- Angular / Node ----
 node_modules/
 frontend/career-project-web/.angular/

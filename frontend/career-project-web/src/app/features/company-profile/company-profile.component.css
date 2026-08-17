@@ -1,0 +1,46 @@
+@import '../../shared/styles/dashboard-shell.css';
+@import '../../shared/styles/page-form-shell.css';
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.upload-btn:hover {
+  background: var(--color-bg);
+}
+
+.company-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-success {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 13px;
+}

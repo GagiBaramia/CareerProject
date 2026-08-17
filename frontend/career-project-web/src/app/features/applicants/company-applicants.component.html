@@ -1,0 +1,63 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    <header class="shell-header">
+      <div>
+        <h1 class="shell-title">კანდიდატები</h1>
+        <p class="shell-subtitle">ყველა განაცხადი თქვენი ვაკანსიების მიხედვით.</p>
+      </div>
+    </header>
+
+    @if (updateError()) {
+      <p class="status-text error">{{ updateError() }}</p>
+    }
+
+    @if (isLoading()) {
+      <p class="status-text">იტვირთება...</p>
+    } @else if (errorMessage()) {
+      <p class="status-text error">{{ errorMessage() }}</p>
+    } @else if (applications().length === 0) {
+      <app-empty-state icon="👥" message="ჯერ არცერთ თქვენს ვაკანსიაზე არავის მოუწერია." />
+    } @else {
+      <div class="applicant-list">
+        @for (app of applications(); track app.id) {
+          <article class="applicant-card">
+            <app-avatar [imageUrl]="app.personPhotoUrl" [name]="app.personName" [size]="48" />
+
+            <div class="applicant-main">
+              <h2 class="applicant-name">{{ app.personName }}</h2>
+              @if (app.personHeadline) {
+                <div class="applicant-headline">{{ app.personHeadline }}</div>
+              }
+              <div class="applicant-meta">
+                {{ app.jobTitle }} · გაგზავნილია: {{ app.appliedAt | date: 'dd/MM/yyyy' }}
+              </div>
+              @if (app.personSkills.length > 0) {
+                <div class="applicant-skills">
+                  @for (skill of app.personSkills; track skill) {
+                    <span class="skill-chip">{{ skill }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="applicant-actions">
+              <app-status-badge [status]="app.status" />
+              <select
+                class="status-select"
+                [ngModel]="app.status"
+                (ngModelChange)="changeStatus(app, $event)"
+                [disabled]="updatingId() === app.id"
+              >
+                @for (option of statuses; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </main>
+</div>

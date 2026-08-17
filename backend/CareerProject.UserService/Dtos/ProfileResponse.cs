@@ -6,5 +6,6 @@ public class ProfileResponse
     public string? Headline { get; set; }
     public string? CvSummary { get; set; }
     public string? Location { get; set; }
+    public string? PhotoUrl { get; set; }
     public List<ProfileSkillDto> Skills { get; set; } = [];
 }

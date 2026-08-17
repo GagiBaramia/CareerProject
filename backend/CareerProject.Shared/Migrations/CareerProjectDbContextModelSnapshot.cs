@@ -108,6 +108,67 @@ namespace CareerProject.Shared.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("CareerProject.Shared.Entities.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CandidateUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId")
+                        .IsUnique();
+
+                    b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("CareerProject.Shared.Entities.DirectMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SenderUserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("DirectMessages");
+                });
+
             modelBuilder.Entity("CareerProject.Shared.Entities.Job", b =>
                 {
                     b.Property<Guid>("Id")
@@ -230,6 +291,9 @@ namespace CareerProject.Shared.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Location")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhotoUrl")
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -445,6 +509,28 @@ namespace CareerProject.Shared.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CareerProject.Shared.Entities.Conversation", b =>
+                {
+                    b.HasOne("CareerProject.Shared.Entities.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("CareerProject.Shared.Entities.DirectMessage", b =>
+                {
+                    b.HasOne("CareerProject.Shared.Entities.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
             modelBuilder.Entity("CareerProject.Shared.Entities.Job", b =>
                 {
                     b.HasOne("CareerProject.Shared.Entities.Company", "Company")
@@ -519,6 +605,11 @@ namespace CareerProject.Shared.Migrations
             modelBuilder.Entity("CareerProject.Shared.Entities.Company", b =>
                 {
                     b.Navigation("Jobs");
+                });
+
+            modelBuilder.Entity("CareerProject.Shared.Entities.Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("CareerProject.Shared.Entities.Job", b =>

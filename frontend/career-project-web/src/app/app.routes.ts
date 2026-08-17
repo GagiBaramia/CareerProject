@@ -52,5 +52,35 @@ export const routes: Routes = [
         (m) => m.JobRecommendationsComponent
       )
   },
+  {
+    path: 'applications',
+    canActivate: [personGuard],
+    loadComponent: () =>
+      import('./features/applications/my-applications.component').then(
+        (m) => m.MyApplicationsComponent
+      )
+  },
+  {
+    path: 'company/applicants',
+    canActivate: [companyGuard],
+    loadComponent: () =>
+      import('./features/applicants/company-applicants.component').then(
+        (m) => m.CompanyApplicantsComponent
+      )
+  },
+  {
+    path: 'company/profile',
+    canActivate: [companyGuard],
+    loadComponent: () =>
+      import('./features/company-profile/company-profile.component').then(
+        (m) => m.CompanyProfileComponent
+      )
+  },
+  {
+    path: 'messages',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/messages/messages.component').then((m) => m.MessagesComponent)
+  },
   { path: '**', redirectTo: 'login' }
 ];

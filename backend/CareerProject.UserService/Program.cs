@@ -2,11 +2,17 @@ using System.Text;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.Shared.Messaging;
+using CareerProject.Shared.Storage;
 using CareerProject.UserService.Auth;
+using CareerProject.UserService.Config;
 using CareerProject.UserService.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+// UseStaticFiles() builds its file provider from wwwroot at WebApplicationBuilder construction
+// time - the folder must exist on disk before CreateBuilder runs, not merely before Build().
+Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "photos"));
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +23,10 @@ builder.Services.AddDbContext<CareerProjectDbContext>(options =>
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.AddSingleton<JwtTokenService>();
+
+builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection(UploadOptions.SectionName));
+builder.Services.AddSingleton<IFileStorage>(_ =>
+    new LocalFileStorage(Path.Combine(builder.Environment.ContentRootPath, "wwwroot")));
 
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException("Jwt configuration section is missing.");
@@ -57,6 +67,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

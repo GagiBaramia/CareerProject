@@ -196,3 +196,40 @@ Panel-ს აქვს Task 20-ის ყველა მოთხოვნი�
 **precision@k/recall@k** (ნაშრომში ნახსენები, PLAN.md-ის შენიშვნის მიხედვით) — ამ ეტაპზე არ აშენებულა: მოითხოვს ground-truth რელევანტობის judgment-ебს რეალურ candidate-vacancy წყვილებზე, რაც სცილდება ამ პროექტის სატესტო მონაცემების (6 დემო ვაკანსია) მასშტაბს — თუ საჭირო გახდება, ცალკე task-ად უნდა მოთხოვო.
 
 შემდეგი: **ეტაპი 23 — Production-like Docker Compose გაშვება**.
+
+---
+
+## PLAN.md-გარეთა დიდი დავალება: Audit + Chat + Uploads + Dashboard-ების redesign
+
+ეს არ არის PLAN.md-ის ერთ-ერთი Stage — ცალკე, დიდი, მომხმარებლის მოთხოვნით, ერთბაშად შესრულებული დავალება (Stage 22-სა და Stage 23-ს შორის), რომელმაც შეგნებულად დაარღვია "ერთ ეტაპზე მეტს ერთდროულად ნუ შეასრულებ" წესი — მომხმარებელმა ეს პირდაპირ დაადასტურა კითხვაზე პასუხით ("ერთიანად, დიდი ცვლილებით"), მას შემდეგ რაც გავაფრთხილე რისკებზე.
+
+**აუდიტის შედეგი (დავალების საწყისი პრემისა ნაწილობრივ არასწორი იყო):** Vacancy Creation, Apply და Company Application Management **უკვე მუშაობდა** (Stage 11/12/17-დან) — გადამოწმდა ხელახლა curl-ითაც და ახალი E2E ტესტებითაც. რეალურად აკლდა: Logout-ის ხილვადი UI ღილაკი (`AuthService.logout()` არსებობდა, მაგრამ არსად არ იძახებოდა), Company-ს candidates-ის UI გვერდი (backend Stage 17-დან იყო, frontend არასდროს აშენებულა), employer↔candidate chat (საერთოდ არ არსებობდა), photo/logo upload (არ არსებობდა), და dashboard-ები იყო თითქმის ცარიელი placeholder.
+
+### ახალი Entities და migration
+`PersonProfile.PhotoUrl`, `Conversation` (`ApplicationId` UNIQUE index — 1 Application → მაქს. 1 Conversation), `DirectMessage` — ერთი migration (`AddChatUploadsFeatures`), გატარებული რეალურ dev Postgres-ზე, არსებული migrations ხელუხლებელია.
+
+### ახალი/შეცვლილი Backend endpoints
+- `POST /api/profile/me/photo`, `POST /api/company/me/logo` — multipart upload, MIME whitelist (jpeg/png/webp), 5MB ლიმიტი (`Upload:MaxImageBytes` config), random filename (`Guid`), `LocalFileStorage : IFileStorage` აბსტრაქციით (მომავალში S3-ზე გადასართველად).
+- `GET /api/applications/mine`, `GET /api/company/applications` — ორივე აკლდა (candidate-ს არ ჰქონდა საკუთარი განაცხადების ნახვის, company-ს კი ყველა-ვაკანსიაზე-ერთად ნახვის გზა).
+- `GET /api/conversations`, `GET /api/conversations/{id}/messages`, `POST /api/conversations/{id}/messages` — ორივე მხარისთვის, ownership check (მონაწილე არ ხარ → 403).
+- `PATCH /api/applications/{id}/status`-ს დაემატა: `Accepted`-ზე გადასვლისას ავტომატურად, idempotently იქმნება `Conversation` (`ConversationService.EnsureConversationForAcceptedApplicationAsync`) — მეორედ Accepted-ზე გადაყვანა დუბლიკატს არ ქმნის.
+- `ApplicationResponse` გამდიდრდა (`CompanyName`, `PersonHeadline`, `PersonPhotoUrl`, `PersonSkills`), `CompanyProfileResponse`-ს დაემატა `Id` (frontend-ს სჭირდებოდა "ჩემი ვაკანსიები" გასაფილტრად).
+- **SignalR** (`ChatHub`, `/hub/chat`) — realtime მხოლოდ delivery-ზეა პასუხისმგებელი, history/persistence REST-ზეა. JWT browser-ის WebSocket-ს Authorization header ვერ ატანს → query-string token (`?access_token=`) დამატებულია **ორივეს**, JobService-ის და Gateway-ის JWT bearer config-ს.
+
+### აღმოჩენილი და გასწორებული 2 რეალური ბაგი (ორივე ამ ახალი ფუნქციონალის ტესტირებისას)
+1. **SignalR race condition:** `joinConversation()` invoke-ს იძახებდა კავშირის `start()`-ის დასრულებამდე, შეცდომას `.catch(() => {})` ჩუმად ყლაპავდა — group-ში join საერთოდ არ ხდებოდა. გასწორდა `connectPromise`-ის გაზიარებით.
+2. **Gateway CORS:** `AllowCredentials()` აკლდა Gateway-ის CORS policy-ს — SignalR-ის browser client ყოველთვის `credentials: include`-ს იყენებს negotiate request-ზე, რაც უჩუმრად ბლოკავდა კავშირს. დადასტურდა ორივე ბაგი რეალურ ბრაუზერში, browser console-ის ჩაწერით, არა ვარაუდით.
+
+### ახალი Frontend pages/components
+`SidebarNavComponent` (როლის მიხედვით სხვადასხვა ბმულები + გასვლა), `StatCardComponent`, `StatusBadgeComponent`, `AvatarComponent`, `EmptyStateComponent`; `PersonDashboardComponent`/`CompanyDashboardComponent` — სრული redesign, ყველა მონაცემი რეალური API-დან; ახალი გვერდები `/applications`, `/company/applicants`, `/company/profile`, `/messages`; `ChatHubService` (`@microsoft/signalr`), `SessionService` (logout ორკესტრაცია — SignalR disconnect + auth clear + redirect, გამოძახებადი როგორც sidebar-ის ღილაკიდან, ისე 401 interceptor-იდან).
+
+**შეგნებული scope-შეზღუდვები:** Profile Wizard/Job Create/Recommendations გვერდებს sidebar არ დავამატე (რომ Stage 9/12/16/20-ის უკვე მუშა, დატესტილი layout არ დამენგრია) — მათი არსებული "← უკან" navigation საკმარისია. Toast/confirmation-dialog infrastructure არ ავაშენე — არსებული inline success/error pattern გამოვიყენე ყველგან, დავალების საკუთარი "არ გააკეთო overengineering" წესის მიხედვით. "პარამეტრები" sidebar-item არცერთ როლს არ დავამატე — არცერთგან არ იყო კონკრეტული მოთხოვნა, ცარიელი placeholder გვერდი აზრს მოკლებული იქნებოდა.
+
+### რეალურად შემოწმდა
+**Backend:** 59 .NET ტესტი (4 პროექტი) — ახალი: `ApplicationChatFlowIntegrationTests` (5 ტესტი: duplicate apply, ownership, **Accepted → ზუსტად 1 Conversation თუნდაც ორჯერ Accept-ის შემდეგ**, მონაწილეებს შორის message გაცვლა + outsider 403, Rejected-ზე Conversation არ იქმნება), `PhotoUploadIntegrationTests` (3 ტესტი: არასწორი MIME → 400, ვალიდური PNG → 200 + URL, token-ის გარეშე → 401), `ImageUploadValidatorTests` (6 unit ტესტი).
+
+**E2E (Playwright):** ახალი `full-hire-flow.spec.ts` — **ორი დამოუკიდებელი browser context/SignalR კავშირით** (რეალური realtime დადასტურებისთვის, არა mock-ით): company რეგისტრაცია → ვაკანსია → person რეგისტრაცია → apply → company ხედავს კანდიდატს → Accept → **ორივე მხარეს ცალკე ჩნდება chat, ცალკე SignalR connection-ით realtime message-ები მიდის ორივე მიმართულებით (< 10წმ, გვერდის reload-ის გარეშე)** → ორივე Logout → person ხელახლა login → application/chat history კვლავ არსებობს. + `logout.spec.ts` (2 ტესტი: ღილაკით logout + browser-back დაცვა, invalid token → ავტომატური logout 401 interceptor-იდან). სულ 9/9 E2E სცენარი გამწვანდა.
+
+**ვიზუალური QA:** რეალური photo/logo upload (ნამდვილი PNG ფაილით, curl-ის ნაცვლად Playwright multipart-ით) → screenshot-ებით დადასტურდა, რომ ატვირთული სურათი რეალურად render-დება (არა მხოლოდ fallback initial) `AvatarComponent`-ში ყველგან — dashboard-ებზე, wizard-ში, applicants-გვერდზე, company profile-ზე. Console errors — არცერთგან.
+
+**Migration/data უსაფრთხოება:** ყველა ტესტმა თავად გაასუფთავა შექმნილი მონაცემები (`e2e-*`/`*-test-*` prefix კონვენციით) — არსებული დემო მონაცემები (TBC Bank, Nino და ა.შ.) ხელუხლებელია.

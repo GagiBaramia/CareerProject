@@ -12,6 +12,10 @@ export class JobService {
     return this.http.post<JobResponse>(`${API_BASE_URL}/api/jobs`, request);
   }
 
+  getJobs(): Observable<JobResponse[]> {
+    return this.http.get<JobResponse[]>(`${API_BASE_URL}/api/jobs`);
+  }
+
   applyToJob(jobId: string): Observable<unknown> {
     return this.http.post(`${API_BASE_URL}/api/jobs/${jobId}/apply`, {});
   }

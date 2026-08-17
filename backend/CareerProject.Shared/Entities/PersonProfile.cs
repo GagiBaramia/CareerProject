@@ -10,6 +10,7 @@ public class PersonProfile
     public string? Headline { get; set; }
     public string? CvSummary { get; set; }
     public string? Location { get; set; }
+    public string? PhotoUrl { get; set; }
     public Vector? Embedding { get; set; }
 
     public User User { get; set; } = null!;

@@ -1,0 +1,146 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    <header class="shell-header">
+      <div class="greeting-row">
+        <app-avatar [imageUrl]="profile()?.photoUrl ?? null" [name]="auth.currentUser()?.displayName ?? ''" [size]="56" />
+        <div>
+          <h1 class="shell-title">გამარჯობა, {{ auth.currentUser()?.displayName }} 👋</h1>
+          <p class="shell-subtitle">აი, რა გელით დღეს.</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <app-stat-card icon="✨" [value]="recommendations().length" label="რეკომენდირებული ვაკანსია" />
+      <app-stat-card icon="📄" [value]="applications().length" label="განაცხადი" />
+      <app-stat-card icon="🎤" [value]="interviewCount()" label="გასაუბრება" />
+      <app-stat-card icon="✅" [value]="acceptedCount()" label="მიღებული" />
+    </div>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">პროფილის შევსება</h2>
+        <a routerLink="/profile/edit" class="section-link">რედაქტირება →</a>
+      </div>
+      <div class="completeness-row">
+        <div class="completeness-bar">
+          <div class="completeness-fill" [style.width.%]="profileCompleteness()"></div>
+        </div>
+        <span class="completeness-value">{{ profileCompleteness() }}%</span>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">საუკეთესო რეკომენდაციები</h2>
+          <a routerLink="/jobs/recommended" class="section-link">ყველას ნახვა →</a>
+        </div>
+
+        @if (recommendationsError()) {
+          <p class="status-text error">რეკომენდაციების ჩატვირთვისას მოხდა შეცდომა.</p>
+        } @else if (topRecommendations().length === 0) {
+          <app-empty-state icon="🔍" message="ჯერ რეკომენდაციები არ არის — შეავსე პროფილი, რომ მიიღო." />
+        } @else {
+          <div class="mini-job-list">
+            @for (job of topRecommendations(); track job.jobId) {
+              <div class="mini-job-card">
+                <div>
+                  <div class="mini-job-title">{{ job.title }}</div>
+                  <div class="mini-job-company">{{ job.companyName }}</div>
+                </div>
+                <span class="mini-match-badge">{{ matchPercent(job) }}%</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">ჩემი განაცხადები</h2>
+          <a routerLink="/applications" class="section-link">ყველას ნახვა →</a>
+        </div>
+
+        @if (applicationsError()) {
+          <p class="status-text error">განაცხადების ჩატვირთვისას მოხდა შეცდომა.</p>
+        } @else if (recentApplications().length === 0) {
+          <app-empty-state icon="📄" message="ჯერ არცერთ ვაკანსიაზე არ გაგიგზავნია განაცხადი." />
+        } @else {
+          <div class="mini-application-list">
+            @for (app of recentApplications(); track app.id) {
+              <div class="mini-application-row">
+                <div>
+                  <div class="mini-job-title">{{ app.jobTitle }}</div>
+                </div>
+                <app-status-badge [status]="app.status" />
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <div class="two-col">
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">ბოლო შეტყობინებები</h2>
+        </div>
+
+        @if (recentNotifications().length === 0) {
+          <app-empty-state icon="🔔" message="ახალი შეტყობინება არ არის." />
+        } @else {
+          <div class="mini-notification-list">
+            @for (n of recentNotifications(); track n.id) {
+              <div class="mini-notification-row" [class.unread]="!n.isRead">
+                <span class="mini-notification-message">{{ n.message }}</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">შეტყობინებები (ჩატი)</h2>
+          <a routerLink="/messages" class="section-link">
+            ყველას ნახვა @if (unreadMessageCount() > 0) { <span class="unread-pill">{{ unreadMessageCount() }}</span> } →
+          </a>
+        </div>
+
+        @if (conversations().length === 0) {
+          <app-empty-state icon="💬" message="ჩატი მაშინ გაიხსნება, როცა კომპანია მიგიღებთ (Accepted)." />
+        } @else {
+          <div class="mini-conversation-list">
+            @for (c of conversations().slice(0, 5); track c.id) {
+              <div class="mini-conversation-row">
+                <app-avatar [imageUrl]="c.otherPartyImageUrl" [name]="c.otherPartyName" [size]="32" />
+                <div class="mini-conversation-body">
+                  <div class="mini-job-title">{{ c.otherPartyName }}</div>
+                  <div class="mini-job-company">{{ c.lastMessagePreview || 'ჯერ შეტყობინება არ არის' }}</div>
+                </div>
+                @if (c.unreadCount > 0) {
+                  <span class="unread-pill">{{ c.unreadCount }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">სწრაფი მოქმედებები</h2>
+      </div>
+      <div class="quick-actions">
+        <a routerLink="/profile/edit" class="quick-action">👤 პროფილის რედაქტირება</a>
+        <a routerLink="/jobs/recommended" class="quick-action">✨ რეკომენდაციების ნახვა</a>
+        <a routerLink="/applications" class="quick-action">📄 ჩემი განაცხადები</a>
+        <a routerLink="/messages" class="quick-action">💬 შეტყობინებები</a>
+      </div>
+    </section>
+  </main>
+</div>

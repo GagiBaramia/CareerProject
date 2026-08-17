@@ -38,6 +38,30 @@
             <p class="card-subtitle">შეავსეთ საბაზისო ინფორმაცია შენი პროფილისთვის.</p>
 
             <form [formGroup]="form" (ngSubmit)="submitStepOne()" class="wizard-form">
+              <div class="field photo-field">
+                <span class="field-label">პროფილის ფოტო</span>
+                <div class="photo-upload-row">
+                  <app-avatar [imageUrl]="photoUrl()" [name]="form.controls.fullName.value || '?'" [size]="64" />
+                  <label class="btn-outline photo-upload-btn">
+                    @if (isUploadingPhoto()) {
+                      იტვირთება...
+                    } @else {
+                      ფოტოს ატვირთვა
+                    }
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      (change)="onPhotoSelected($event)"
+                      hidden
+                      [disabled]="isUploadingPhoto()"
+                    />
+                  </label>
+                </div>
+                @if (photoError()) {
+                  <span class="field-error">{{ photoError() }}</span>
+                }
+              </div>
+
               <label class="field">
                 <span class="field-label">სრული სახელი</span>
                 <input type="text" formControlName="fullName" class="field-input" />
@@ -101,7 +125,7 @@
           <h3 class="preview-title">პროფილის გადახედვა</h3>
           <p class="preview-subtitle">აი ასე ჩანს შენი პროფილი.</p>
 
-          <div class="preview-avatar">{{ form.controls.fullName.value?.charAt(0) || '?' }}</div>
+          <app-avatar [imageUrl]="photoUrl()" [name]="form.controls.fullName.value || '?'" [size]="64" />
           <div class="preview-name">{{ form.controls.fullName.value || 'სახელი გვარი' }}</div>
 
           @if (form.controls.headline.value) {

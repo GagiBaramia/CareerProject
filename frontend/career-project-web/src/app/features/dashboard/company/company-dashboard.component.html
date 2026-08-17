@@ -1,0 +1,116 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    <header class="shell-header">
+      <div class="greeting-row">
+        <app-avatar [imageUrl]="company()?.logoUrl ?? null" [name]="auth.currentUser()?.displayName ?? ''" [size]="56" />
+        <div>
+          <h1 class="shell-title">გამარჯობა, {{ auth.currentUser()?.displayName }} 👋</h1>
+          <p class="shell-subtitle">კომპანიის აქტივობის მიმოხილვა.</p>
+        </div>
+      </div>
+      <a routerLink="/jobs/new" class="btn-primary">➕ ახალი ვაკანსია</a>
+    </header>
+
+    <div class="stats-grid">
+      <app-stat-card icon="💼" [value]="myJobs().length" label="აქტიური ვაკანსია" />
+      <app-stat-card icon="📄" [value]="applications().length" label="სულ განაცხადი" />
+      <app-stat-card icon="🆕" [value]="newApplicationsCount()" label="ახალი განაცხადი" />
+      <app-stat-card icon="🎤" [value]="interviewCount()" label="გასაუბრება" />
+      <app-stat-card icon="✅" [value]="acceptedCount()" label="მიღებული კანდიდატი" />
+    </div>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">ჩემი ვაკანსიები</h2>
+        <a routerLink="/jobs/new" class="section-link">ახლის დამატება →</a>
+      </div>
+
+      @if (jobsError()) {
+        <p class="status-text error">ვაკანსიების ჩატვირთვისას მოხდა შეცდომა.</p>
+      } @else if (recentJobs().length === 0) {
+        <app-empty-state icon="💼" message="ჯერ არცერთი ვაკანსია არ გამოგიქვეყნებია.">
+          <a routerLink="/jobs/new" class="btn-outline">გამოაქვეყნე პირველი ვაკანსია</a>
+        </app-empty-state>
+      } @else {
+        <div class="mini-job-list">
+          @for (job of recentJobs(); track job.id) {
+            <div class="mini-job-card">
+              <div>
+                <div class="mini-job-title">{{ job.title }}</div>
+                <div class="mini-job-company">{{ job.location }} · {{ job.employmentType }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <div class="two-col">
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">ბოლო კანდიდატები</h2>
+          <a routerLink="/company/applicants" class="section-link">ყველას ნახვა →</a>
+        </div>
+
+        @if (applicationsError()) {
+          <p class="status-text error">კანდიდატების ჩატვირთვისას მოხდა შეცდომა.</p>
+        } @else if (recentApplicants().length === 0) {
+          <app-empty-state icon="👥" message="ჯერ არცერთ ვაკანსიაზე არავის მოუწერია." />
+        } @else {
+          <div class="mini-applicant-list">
+            @for (app of recentApplicants(); track app.id) {
+              <div class="mini-applicant-row">
+                <app-avatar [imageUrl]="app.personPhotoUrl" [name]="app.personName" [size]="36" />
+                <div class="mini-applicant-body">
+                  <div class="mini-job-title">{{ app.personName }}</div>
+                  <div class="mini-job-company">{{ app.jobTitle }}</div>
+                </div>
+                <app-status-badge [status]="app.status" />
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">ბოლო შეტყობინებები</h2>
+          <a routerLink="/messages" class="section-link">ყველას ნახვა →</a>
+        </div>
+
+        @if (conversations().length === 0) {
+          <app-empty-state icon="💬" message="ჩატი მაშინ გაიხსნება, როცა კანდიდატს Accepted სტატუსს მისცემთ." />
+        } @else {
+          <div class="mini-conversation-list">
+            @for (c of conversations().slice(0, 5); track c.id) {
+              <div class="mini-conversation-row">
+                <app-avatar [imageUrl]="c.otherPartyImageUrl" [name]="c.otherPartyName" [size]="32" />
+                <div class="mini-conversation-body">
+                  <div class="mini-job-title">{{ c.otherPartyName }}</div>
+                  <div class="mini-job-company">{{ c.lastMessagePreview || 'ჯერ შეტყობინება არ არის' }}</div>
+                </div>
+                @if (c.unreadCount > 0) {
+                  <span class="unread-pill">{{ c.unreadCount }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">სწრაფი მოქმედებები</h2>
+      </div>
+      <div class="quick-actions">
+        <a routerLink="/jobs/new" class="quick-action">➕ ახალი ვაკანსია</a>
+        <a routerLink="/company/applicants" class="quick-action">👥 კანდიდატები</a>
+        <a routerLink="/messages" class="quick-action">💬 შეტყობინებები</a>
+        <a routerLink="/company/profile" class="quick-action">🏢 კომპანიის პროფილი</a>
+      </div>
+    </section>
+  </main>
+</div>

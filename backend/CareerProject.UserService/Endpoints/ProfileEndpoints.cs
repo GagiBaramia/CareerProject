@@ -3,9 +3,12 @@ using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.Shared.Events;
 using CareerProject.Shared.Messaging;
+using CareerProject.Shared.Storage;
+using CareerProject.UserService.Config;
 using CareerProject.UserService.Dtos;
 using CareerProject.Shared.Validation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CareerProject.UserService.Endpoints;
 
@@ -20,6 +23,7 @@ public static class ProfileEndpoints
         group.MapGet("/me", GetMyProfile);
         group.MapPut("/me", UpdateMyProfile);
         group.MapPut("/me/skills", UpdateMySkills);
+        group.MapPost("/me/photo", UploadPhoto).DisableAntiforgery();
     }
 
     private static async Task<IResult> GetMyProfile(ClaimsPrincipal user, CareerProjectDbContext db)
@@ -117,6 +121,30 @@ public static class ProfileEndpoints
         return Results.Ok(ToResponse(refreshed!));
     }
 
+    private static async Task<IResult> UploadPhoto(
+        IFormFile file,
+        ClaimsPrincipal user,
+        CareerProjectDbContext db,
+        IFileStorage storage,
+        IOptions<UploadOptions> options,
+        CancellationToken cancellationToken)
+    {
+        var profile = await LoadProfile(user, db);
+        if (profile is null)
+            return Results.NotFound();
+
+        if (!ImageUploadValidator.TryValidate(file.ContentType, file.Length, options.Value.MaxImageBytes, out var extension, out var error))
+            return Results.BadRequest(new { message = error });
+
+        await using var stream = file.OpenReadStream();
+        var url = await storage.SaveAsync(stream, extension, "photos", cancellationToken);
+
+        profile.PhotoUrl = url;
+        await db.SaveChangesAsync(cancellationToken);
+
+        return Results.Ok(new { photoUrl = url });
+    }
+
     private static async Task<PersonProfile?> LoadProfile(ClaimsPrincipal user, CareerProjectDbContext db)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub")!);
@@ -133,6 +161,7 @@ public static class ProfileEndpoints
         Headline = profile.Headline,
         CvSummary = profile.CvSummary,
         Location = profile.Location,
+        PhotoUrl = profile.PhotoUrl,
         Skills = profile.PersonSkills.Select(ps => new ProfileSkillDto
         {
             SkillId = ps.SkillId,

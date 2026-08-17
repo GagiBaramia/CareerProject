@@ -1,0 +1,92 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content messages-content">
+    <header class="shell-header">
+      <h1 class="shell-title">შეტყობინებები</h1>
+    </header>
+
+    <div class="messages-layout">
+      <aside class="conversation-list-pane">
+        @if (isLoadingConversations()) {
+          <p class="status-text">იტვირთება...</p>
+        } @else if (conversationsError()) {
+          <p class="status-text error">{{ conversationsError() }}</p>
+        } @else if (conversations().length === 0) {
+          <app-empty-state icon="💬" message="ჩატი მაშინ გაიხსნება, როცა განაცხადი Accepted გახდება." />
+        } @else {
+          @for (c of conversations(); track c.id) {
+            <button
+              type="button"
+              class="conversation-item"
+              [class.active]="c.id === selectedConversationId()"
+              (click)="selectConversation(c.id)"
+            >
+              <app-avatar [imageUrl]="c.otherPartyImageUrl" [name]="c.otherPartyName" [size]="40" />
+              <div class="conversation-item-body">
+                <div class="conversation-item-name">{{ c.otherPartyName }}</div>
+                <div class="conversation-item-job">{{ c.jobTitle }}</div>
+                <div class="conversation-item-preview">{{ c.lastMessagePreview || 'ჯერ შეტყობინება არ არის' }}</div>
+              </div>
+              @if (c.unreadCount > 0) {
+                <span class="unread-pill">{{ c.unreadCount }}</span>
+              }
+            </button>
+          }
+        }
+      </aside>
+
+      <section class="chat-pane">
+        @if (!selectedConversation()) {
+          <app-empty-state icon="💬" message="აირჩიეთ საუბარი, რომ ნახოთ შეტყობინებები." />
+        } @else {
+          <header class="chat-header">
+            <app-avatar
+              [imageUrl]="selectedConversation()!.otherPartyImageUrl"
+              [name]="selectedConversation()!.otherPartyName"
+              [size]="40"
+            />
+            <div>
+              <div class="chat-header-name">{{ selectedConversation()!.otherPartyName }}</div>
+              <div class="chat-header-job">{{ selectedConversation()!.jobTitle }}</div>
+            </div>
+          </header>
+
+          <div class="chat-messages">
+            @if (isLoadingMessages()) {
+              <p class="status-text">იტვირთება...</p>
+            } @else if (messagesError()) {
+              <p class="status-text error">{{ messagesError() }}</p>
+            } @else if (messages().length === 0) {
+              <app-empty-state icon="👋" message="დაწერეთ პირველი შეტყობინება." />
+            } @else {
+              @for (message of messages(); track message.id) {
+                <div class="message-row" [class.own]="message.senderUserId === currentUserId()">
+                  <div class="message-bubble">
+                    <p class="message-text">{{ message.content }}</p>
+                    <span class="message-time">{{ message.createdAt | date: 'HH:mm' }}</span>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          <form class="chat-input-row" (ngSubmit)="sendMessage()">
+            <input
+              type="text"
+              class="chat-input"
+              placeholder="დაწერეთ შეტყობინება..."
+              [ngModel]="messageInput()"
+              (ngModelChange)="messageInput.set($event)"
+              name="messageInput"
+              [disabled]="isSending()"
+            />
+            <button type="submit" class="chat-send-btn" [disabled]="isSending() || !messageInput().trim()">
+              გაგზავნა
+            </button>
+          </form>
+        }
+      </section>
+    </div>
+  </main>
+</div>

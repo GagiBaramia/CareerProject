@@ -27,6 +27,7 @@ export interface ProfileResponse {
   headline: string | null;
   cvSummary: string | null;
   location: string | null;
+  photoUrl: string | null;
   skills: ProfileSkill[];
 }
 

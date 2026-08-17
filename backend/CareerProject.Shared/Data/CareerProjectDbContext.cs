@@ -20,6 +20,8 @@ public class CareerProjectDbContext : DbContext
     public DbSet<Application> Applications => Set<Application>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -119,6 +121,25 @@ public class CareerProjectDbContext : DbContext
             entity.HasOne(n => n.RecipientUser)
                 .WithMany()
                 .HasForeignKey(n => n.RecipientUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            // One Application can never have more than one Conversation.
+            entity.HasIndex(c => c.ApplicationId).IsUnique();
+
+            entity.HasOne(c => c.Application)
+                .WithMany()
+                .HasForeignKey(c => c.ApplicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<DirectMessage>(entity =>
+        {
+            entity.HasOne(m => m.Conversation)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

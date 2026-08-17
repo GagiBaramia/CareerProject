@@ -19,7 +19,15 @@ public static class ApplicationEndpoints
             .WithTags("Applications")
             .RequireAuthorization("PersonOnly");
 
+        app.MapGet("/api/applications/mine", ListMyApplications)
+            .WithTags("Applications")
+            .RequireAuthorization("PersonOnly");
+
         app.MapGet("/api/company/jobs/{jobId:guid}/applications", ListApplicationsForJob)
+            .WithTags("Applications")
+            .RequireAuthorization("CompanyOnly");
+
+        app.MapGet("/api/company/applications", ListAllApplicationsForCompany)
             .WithTags("Applications")
             .RequireAuthorization("CompanyOnly");
 
@@ -63,6 +71,22 @@ public static class ApplicationEndpoints
         return Results.Created($"/api/applications/{application.Id}", ToResponse(created!));
     }
 
+    private static async Task<IResult> ListMyApplications(ClaimsPrincipal user, CareerProjectDbContext db)
+    {
+        var profile = await CurrentUserResolver.LoadCurrentPersonProfileAsync(user, db);
+        if (profile is null)
+            return Results.NotFound(new { message = "Person profile not found." });
+
+        var applications = await db.Applications
+            .Include(a => a.Job).ThenInclude(j => j.Company)
+            .Include(a => a.Person).ThenInclude(p => p.PersonSkills).ThenInclude(ps => ps.Skill)
+            .Where(a => a.PersonId == profile.Id)
+            .OrderByDescending(a => a.AppliedAt)
+            .ToListAsync();
+
+        return Results.Ok(applications.Select(ToResponse));
+    }
+
     private static async Task<IResult> ListApplicationsForJob(Guid jobId, ClaimsPrincipal user, CareerProjectDbContext db)
     {
         var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
@@ -77,9 +101,25 @@ public static class ApplicationEndpoints
             return Results.Forbid();
 
         var applications = await db.Applications
-            .Include(a => a.Job)
-            .Include(a => a.Person)
+            .Include(a => a.Job).ThenInclude(j => j.Company)
+            .Include(a => a.Person).ThenInclude(p => p.PersonSkills).ThenInclude(ps => ps.Skill)
             .Where(a => a.JobId == jobId)
+            .OrderByDescending(a => a.AppliedAt)
+            .ToListAsync();
+
+        return Results.Ok(applications.Select(ToResponse));
+    }
+
+    private static async Task<IResult> ListAllApplicationsForCompany(ClaimsPrincipal user, CareerProjectDbContext db)
+    {
+        var company = await CurrentUserResolver.LoadCurrentCompanyAsync(user, db);
+        if (company is null)
+            return Results.NotFound(new { message = "Company profile not found." });
+
+        var applications = await db.Applications
+            .Include(a => a.Job).ThenInclude(j => j.Company)
+            .Include(a => a.Person).ThenInclude(p => p.PersonSkills).ThenInclude(ps => ps.Skill)
+            .Where(a => a.Job.CompanyId == company.Id)
             .OrderByDescending(a => a.AppliedAt)
             .ToListAsync();
 
@@ -91,7 +131,9 @@ public static class ApplicationEndpoints
         UpdateApplicationStatusRequest request,
         ClaimsPrincipal user,
         CareerProjectDbContext db,
-        IEventPublisher publisher)
+        IEventPublisher publisher,
+        ConversationService conversationService,
+        CancellationToken cancellationToken)
     {
         if (!RequestValidator.TryValidate(request, out var errors))
             return Results.ValidationProblem(errors);
@@ -116,16 +158,24 @@ public static class ApplicationEndpoints
             return Results.Forbid();
 
         application.Status = status;
-        await db.SaveChangesAsync();
-        await publisher.PublishAsync(new ApplicationStatusChanged { EntityId = application.Id });
+
+        // Accepted is the one status that also opens a private chat between the candidate and
+        // this company - idempotent, so re-accepting an already-Accepted application is a no-op.
+        if (status == ApplicationStatus.Accepted)
+        {
+            await conversationService.EnsureConversationForAcceptedApplicationAsync(application, company.UserId, cancellationToken);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        await publisher.PublishAsync(new ApplicationStatusChanged { EntityId = application.Id }, cancellationToken);
 
         return Results.Ok(ToResponse(application));
     }
 
     private static Task<Application?> LoadApplication(CareerProjectDbContext db, Guid id) =>
         db.Applications
-            .Include(a => a.Job)
-            .Include(a => a.Person)
+            .Include(a => a.Job).ThenInclude(j => j.Company)
+            .Include(a => a.Person).ThenInclude(p => p.PersonSkills).ThenInclude(ps => ps.Skill)
             .FirstOrDefaultAsync(a => a.Id == id);
 
     private static ApplicationResponse ToResponse(Application application) => new()
@@ -133,8 +183,12 @@ public static class ApplicationEndpoints
         Id = application.Id,
         JobId = application.JobId,
         JobTitle = application.Job.Title,
+        CompanyName = application.Job.Company.Name,
         PersonId = application.PersonId,
         PersonName = application.Person.FullName,
+        PersonHeadline = application.Person.Headline,
+        PersonPhotoUrl = application.Person.PhotoUrl,
+        PersonSkills = application.Person.PersonSkills.Select(ps => ps.Skill.Name).ToList(),
         Status = application.Status.ToString(),
         AppliedAt = application.AppliedAt,
     };

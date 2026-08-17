@@ -1,0 +1,34 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-submitted {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-inreview {
+  background: #fefce8;
+  color: #ca8a04;
+}
+
+.status-interview {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-accepted {
+  background: #ecfdf5;
+  color: #059669;
+}

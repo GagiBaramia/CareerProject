@@ -1,0 +1,68 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    <header class="shell-header">
+      <div>
+        <h1 class="shell-title">კომპანიის პროფილი</h1>
+        <p class="shell-subtitle">ეს ინფორმაცია ჩანს კანდიდატებისთვის ვაკანსიებზე.</p>
+      </div>
+    </header>
+
+    @if (isLoading()) {
+      <p class="status-text">იტვირთება...</p>
+    } @else {
+      <section class="section logo-section">
+        <app-avatar [imageUrl]="logoUrl()" [name]="form.controls.name.value || '?'" [size]="72" />
+        <div class="logo-upload">
+          <label class="upload-btn">
+            @if (isUploadingLogo()) {
+              იტვირთება...
+            } @else {
+              ლოგოს ატვირთვა
+            }
+            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onLogoSelected($event)" hidden [disabled]="isUploadingLogo()" />
+          </label>
+          @if (logoError()) {
+            <p class="status-text error">{{ logoError() }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="section">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="company-form">
+          <label class="field">
+            <span class="field-label">კომპანიის დასახელება</span>
+            <input type="text" formControlName="name" class="field-input" />
+            @if (form.controls.name.touched && form.controls.name.invalid) {
+              <span class="field-error">დასახელება აუცილებელია</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field-label">ინდუსტრია</span>
+            <input type="text" formControlName="industry" class="field-input" placeholder="მაგ. IT, ბანკინგი, საცალო ვაჭრობა" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">აღწერა</span>
+            <textarea formControlName="description" class="field-input field-textarea" rows="5"></textarea>
+          </label>
+
+          @if (errorMessage()) {
+            <div class="form-error">{{ errorMessage() }}</div>
+          }
+          @if (successMessage()) {
+            <div class="form-success">{{ successMessage() }}</div>
+          }
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="isSaving()">
+              {{ isSaving() ? 'ინახება...' : 'შენახვა' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+  </main>
+</div>

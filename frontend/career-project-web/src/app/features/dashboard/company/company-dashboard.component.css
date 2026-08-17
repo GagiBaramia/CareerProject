@@ -1,0 +1,6 @@
+@import '../../../shared/styles/dashboard-shell.css';
+@import '../../../shared/styles/dashboard-widgets.css';
+
+.shell-header {
+  align-items: center;
+}
