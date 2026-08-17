@@ -54,6 +54,16 @@
                   <option [value]="option.value">{{ option.label }}</option>
                 }
               </select>
+
+              @if (app.status === 'Accepted') {
+                @if (conversationIdFor(app.id); as conversationId) {
+                  <a [routerLink]="['/messages']" [queryParams]="{ conversationId }" class="chat-open-btn">
+                    💬 ჩატის გახსნა
+                  </a>
+                } @else {
+                  <span class="chat-pending-hint">ჩატი იქმნება...</span>
+                }
+              }
             </div>
           </article>
         }

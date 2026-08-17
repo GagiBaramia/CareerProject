@@ -73,3 +73,23 @@
   font-size: 12px;
   background: var(--color-surface);
 }
+
+.chat-open-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chat-open-btn:hover {
+  text-decoration: none;
+  background: #dbeafe;
+}
+
+.chat-pending-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
