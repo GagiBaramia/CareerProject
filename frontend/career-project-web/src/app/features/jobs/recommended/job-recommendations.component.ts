@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { RecommendationService } from '../../../core/services/recommendation.service';
 import { AiChatService } from '../../../core/services/ai-chat.service';
+import { JobService } from '../../../core/services/job.service';
 import { JobRecommendation } from '../../../core/models/recommendation.models';
 import { AiChatMessage } from '../../../core/models/ai-chat.models';
 import { EMPLOYMENT_TYPES, WORK_FORMATS } from '../../../core/models/job.models';
@@ -19,6 +20,7 @@ type SortOrder = 'desc' | 'asc';
 export class JobRecommendationsComponent implements OnInit {
   private readonly recommendationService = inject(RecommendationService);
   private readonly aiChatService = inject(AiChatService);
+  private readonly jobService = inject(JobService);
   readonly auth = inject(AuthService);
 
   readonly employmentTypes = EMPLOYMENT_TYPES;
@@ -33,6 +35,10 @@ export class JobRecommendationsComponent implements OnInit {
   readonly sortOrder = signal<SortOrder>('desc');
 
   readonly highlightedJobId = signal<string | null>(null);
+
+  readonly appliedJobIds = signal<Set<string>>(new Set());
+  readonly applyingJobId = signal<string | null>(null);
+  readonly applyError = signal<string | null>(null);
 
   readonly chatMessages = signal<AiChatMessage[]>([]);
   readonly chatInput = signal('');
@@ -111,6 +117,31 @@ export class JobRecommendationsComponent implements OnInit {
       error: () => {
         this.chatError.set('შეტყობინების გაგზავნისას მოხდა შეცდომა. სცადეთ თავიდან.');
         this.chatLoading.set(false);
+      }
+    });
+  }
+
+  applyToJob(jobId: string): void {
+    if (this.appliedJobIds().has(jobId) || this.applyingJobId()) {
+      return;
+    }
+
+    this.applyingJobId.set(jobId);
+    this.applyError.set(null);
+
+    this.jobService.applyToJob(jobId).subscribe({
+      next: () => {
+        this.appliedJobIds.update((ids) => new Set(ids).add(jobId));
+        this.applyingJobId.set(null);
+      },
+      error: (err) => {
+        if (err.status === 409) {
+          // Already applied earlier (e.g. previous session) - treat as applied, not an error.
+          this.appliedJobIds.update((ids) => new Set(ids).add(jobId));
+        } else {
+          this.applyError.set('განაცხადის გაგზავნისას მოხდა შეცდომა. სცადეთ თავიდან.');
+        }
+        this.applyingJobId.set(null);
       }
     });
   }

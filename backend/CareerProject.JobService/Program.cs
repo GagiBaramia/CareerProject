@@ -59,3 +59,6 @@ app.MapJobEndpoints();
 app.MapApplicationEndpoints();
 
 app.Run();
+
+// Needed so CareerProject.JobService.Tests can reference this entry point via WebApplicationFactory<Program>.
+public partial class Program { }

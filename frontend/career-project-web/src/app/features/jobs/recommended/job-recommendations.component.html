@@ -78,9 +78,30 @@
                     }
                   </div>
                 }
+
+                <div class="apply-row">
+                  <button
+                    type="button"
+                    class="apply-btn"
+                    [class.applied]="appliedJobIds().has(job.jobId)"
+                    [disabled]="appliedJobIds().has(job.jobId) || applyingJobId() === job.jobId"
+                    (click)="applyToJob(job.jobId)"
+                  >
+                    @if (appliedJobIds().has(job.jobId)) {
+                      განაცხადი გაგზავნილია ✓
+                    } @else if (applyingJobId() === job.jobId) {
+                      იგზავნება...
+                    } @else {
+                      განაცხადის გაგზავნა
+                    }
+                  </button>
+                </div>
               </article>
             }
           </div>
+        }
+        @if (applyError()) {
+          <p class="status-text error">{{ applyError() }}</p>
         }
       </section>
 

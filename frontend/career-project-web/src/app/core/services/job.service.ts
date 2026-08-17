@@ -11,4 +11,8 @@ export class JobService {
   createJob(request: CreateJobRequest): Observable<JobResponse> {
     return this.http.post<JobResponse>(`${API_BASE_URL}/api/jobs`, request);
   }
+
+  applyToJob(jobId: string): Observable<unknown> {
+    return this.http.post(`${API_BASE_URL}/api/jobs/${jobId}/apply`, {});
+  }
 }

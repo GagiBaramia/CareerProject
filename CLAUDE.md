@@ -172,4 +172,27 @@ Panel-ს აქვს Task 20-ის ყველა მოთხოვნი�
 
 **რეფაქტორი:** არ დასჭირდა — ახალი `Caching/` namespace მთლიანად RecommendationService-ის შიგნითაა, `CareerProject.Shared`-ში არ გატანილა (ჯერ მხოლოდ ერთ სერვისს სჭირდება, DRY-on-third-use პრინციპის მიხედვით).
 
-შემდეგი: **ეტაპი 22 — ტესტირება** (Unit/Integration/E2E, `precision@k`/`recall@k`).
+ეტაპი 22 (ტესტირება) დასრულებულია და დადასტურებულია — 42 .NET ტესტი (4 ახალი/გაფართოებული პროექტი) + 6 Playwright E2E სცენარი, ყველა რეალურად გაშვებული და გამწვანებული.
+
+**Unit Tests** (სწრაფი, infrastructure არ სჭირდება):
+- Skill overlap + hybrid score — უკვე დაფარული იყო Stage 15-ის `HybridMatchingCalculatorTests`-ით (11 ტესტი).
+- **Role validation** — ახალი `CareerProject.Shared.Tests/Unit/RequestValidatorTests.cs` (generic) + `CareerProject.UserService.Tests/Unit/RegistrationRoleValidationTests.cs` (`RegisterPersonRequest`/`RegisterCompanyRequest`/`LoginRequest` კონკრეტულად — ამოწმებს, რომ არასწორი მოთხოვნა ვერასდროს მიაღწევს User-ის+role-ის შექმნამდე).
+- **Application duplicate prevention** — ახალი, სუფთა `CareerProject.JobService/Services/ApplicationRules.cs` (`IsDuplicate`), ამოღებული `ApplicationEndpoints.SubmitApplication`-ის inline query-იდან (იგივე Stage 15-ის `HybridMatchingCalculator`-ის ამოღების პატერნი) — 3 unit ტესტი `CareerProject.JobService.Tests/Unit/`-ში.
+
+**Integration Tests** (რეალურ dev Postgres/RabbitMQ-ზე, `docker compose up -d` საჭირო):
+- **PostgreSQL** — ახალი `CareerProject.Shared.Tests/Integration/PostgresIntegrationTests.cs`: insert real user → ახალი `DbContext` instance-ით readback.
+- **RabbitMQ** — ახალი `CareerProject.Shared.Tests/Integration/RabbitMqIntegrationTests.cs`: `RabbitMqEventPublisher` → real exchange/queue → `RabbitMqConsumerBase<T>` subclass — Stage 13-ის scratch harness-ის ფორმალიზებული ვერსია, ახლა commit-ში.
+- **Auth flow** — ახალი `CareerProject.UserService.Tests/Integration/AuthFlowIntegrationTests.cs`, `WebApplicationFactory<Program>`-ით: register→login, დუბლირებული email → 409, არასწორი პაროლი/უცნობი email → 401.
+- **Job CRUD** — ახალი `CareerProject.JobService.Tests/Integration/JobCrudIntegrationTests.cs`: create/get/list/update/delete, role 403 (Person), ownership 403 (სხვა კომპანია), token-ის გარეშე 401.
+- `WebApplicationFactory<Program>`-ისთვის საჭირო გახდა `public partial class Program {}` მარკერის დამატება `UserService`/`JobService`-ის `Program.cs`-ების ბოლოში (სტანდარტული .NET pattern top-level statements-ის მქონე პროექტისთვის, runtime ქცევას არ ცვლის).
+- ყველა integration ტესტი თავად ასუფთავებს შექმნილ მონაცემებს (`IAsyncLifetime.DisposeAsync` / `finally`) — გადამოწმდა, არცერთი ტესტის შემდეგ ბაზაში/RabbitMQ-ში ნაშთი არ დარჩენილა.
+
+**E2E (Playwright, Angular)**: `frontend/career-project-web/e2e/` + `playwright.config.ts`, `npm run test:e2e`. 6 სცენარი (ყველა Task 22-ის სიიდან): person registration, profile creation, company registration, vacancy creation, recommendation viewing, apply. Setup-ისთვის (რეგისტრაცია/პროფილი) პირდაპირ API-ს იყენებს (`e2e/helpers.ts`), რომ თითო test ფოკუსირებული დარჩეს საკუთარ სცენარზე; auth localStorage-ში `addInitScript`-ით injected-ია (იგივე მექანიზმი, რასაც `AuthService` თავად წერს).
+
+**აღმოჩენა — "Apply" E2E-ს ვერ დავწერდი UI-ს გარეშე:** Stage 17-ის Application flow მხოლოდ backend-ად დარჩა (curl-ით ტესტილი), frontend-ში "განაცხადის გაგზავნა" ღილაკი არსად არსებობდა. Task 22 კი პირდაპირ ითხოვს "Apply" E2E სცენარს — ამიტომ დავამატე მინიმალური apply ღილაკი `/jobs/recommended`-ის job-card-ებზე (`JobService.applyToJob()`, ღილაკის loading/applied/error state-ები), იგივე პრინციპით რაც Stage 12-ის `Job.WorkFormat`/`Salary` ველების დამატებას ჰქონდა — მომდევნო ტასკის საკუთარი მოთხოვნიდან გამომდინარეობს, არა თვითნებური scope-ის გაფართოება.
+
+**რეალურად შემოწმდა:** ყველა 4 .NET ტესტ-პროექტი ერთად გაეშვა (`dotnet test backend/CareerProject.sln`) — 42/42 გამწვანდა; Playwright-ის 6/6 სცენარი რეალურ სრულ სტეკზე (Docker + 5 backend + `ng serve`) გამწვანდა. გზაში ერთი საკუთარი ტესტის ბაგი ვიპოვე და გავასწორე — Playwright-ის strict-mode-მა ზუსტად აჩვენა მიზეზი ("C#" ტექსტი გვერდზე ორჯერ ჩნდება, skill-სიაში და live preview-ში) — ეს არის ზუსტად Task 22-ის "თითო failing test-ის მიზეზი მკაფიოდ უნდა ჩანდეს" მოთხოვნის რეალური დემონსტრაცია.
+
+**precision@k/recall@k** (ნაშრომში ნახსენები, PLAN.md-ის შენიშვნის მიხედვით) — ამ ეტაპზე არ აშენებულა: მოითხოვს ground-truth რელევანტობის judgment-ебს რეალურ candidate-vacancy წყვილებზე, რაც სცილდება ამ პროექტის სატესტო მონაცემების (6 დემო ვაკანსია) მასშტაბს — თუ საჭირო გახდება, ცალკე task-ად უნდა მოთხოვო.
+
+შემდეგი: **ეტაპი 23 — Production-like Docker Compose გაშვება**.

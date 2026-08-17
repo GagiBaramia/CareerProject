@@ -66,3 +66,6 @@ app.MapSkillsEndpoints();
 app.MapProfileEndpoints();
 
 app.Run();
+
+// Needed so CareerProject.UserService.Tests can reference this entry point via WebApplicationFactory<Program>.
+public partial class Program { }

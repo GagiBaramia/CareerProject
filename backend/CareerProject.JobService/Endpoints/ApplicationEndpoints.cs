@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using CareerProject.JobService.Auth;
 using CareerProject.JobService.Dtos;
+using CareerProject.JobService.Services;
 using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.Shared.Events;
@@ -37,8 +38,12 @@ public static class ApplicationEndpoints
         if (!jobExists)
             return Results.NotFound(new { message = "Job not found." });
 
-        var alreadyApplied = await db.Applications.AnyAsync(a => a.JobId == jobId && a.PersonId == profile.Id);
-        if (alreadyApplied)
+        var jobIdsAlreadyAppliedTo = await db.Applications
+            .Where(a => a.PersonId == profile.Id)
+            .Select(a => a.JobId)
+            .ToListAsync();
+
+        if (ApplicationRules.IsDuplicate(jobIdsAlreadyAppliedTo, jobId))
             return Results.Conflict(new { message = "You have already applied to this job." });
 
         var application = new Application
