@@ -17,8 +17,10 @@ builder.Services.AddDbContext<CareerProjectDbContext>(options =>
     options.UseNpgsql(PostgresConnectionStringBuilder.BuildFromEnvironment(), o => o.UseVector()));
 
 builder.Services.AddHttpClient<GeminiEmbeddingClient>();
+builder.Services.AddHttpClient<GeminiChatClient>();
 builder.Services.AddScoped<PersonProfileEmbeddingService>();
 builder.Services.AddScoped<JobEmbeddingService>();
+builder.Services.AddScoped<AiChatService>();
 
 // Embedding is a background side effect of profile/job saves in other
 // services - these consumers never block the original HTTP request.
@@ -28,6 +30,7 @@ builder.Services.AddHostedService<JobCreatedConsumer>();
 builder.Services.AddHostedService<JobUpdatedConsumer>();
 
 builder.Services.Configure<RecommendationOptions>(builder.Configuration.GetSection(RecommendationOptions.SectionName));
+builder.Services.Configure<AiChatOptions>(builder.Configuration.GetSection(AiChatOptions.SectionName));
 
 // Validates tokens issued by CareerProject.UserService - Issuer/Audience/secret must match.
 var jwtSecret = Environment.GetEnvironmentVariable("Jwt__Secret")
@@ -67,5 +70,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRecommendationEndpoints();
+app.MapAiChatEndpoints();
 
 app.Run();
