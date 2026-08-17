@@ -138,4 +138,10 @@ JWT secret `Jwt__Secret` env var-შია (`.env`, double-underscore = ASP.NET 
 
 **რეალურად შემოწმდა:** Nino-მ განაცხადი გაგზავნა TBC Bank-ის ვაკანსიაზე (201), მეორედ იგივეზე — 409; TBC Bank-მა (owner) დაინახა განაცხადი და შეცვალა status `InReview`-ზე (200); არასწორი status string → 400; **სხვა** კომპანია (არა owner) → 403 იმავე ვაკანსიის განაცხადებზე წვდომაზე; Person-ს Company-ის endpoint-ებზე წვდომა არ აქვს (403) და პირიქითაც (403); RabbitMQ-ს `publish_in` counter-მა დაადასტურა `ApplicationSubmitted`/`ApplicationStatusChanged` ორივეს გამოქვეყნება.
 
-შემდეგი: **ეტაპი 18 — Notification Service** (RabbitMQ consumer-ები `ApplicationSubmitted`/`ApplicationStatusChanged`-ისთვის).
+ეტაპი 18 (Notification Service) დასრულებულია და დადასტურებულია: `CareerProject.NotificationService`-ის პირველი კოდი — `ApplicationSubmittedConsumer`/`ApplicationStatusChangedConsumer`, Stage 13-ის `RabbitMqConsumerBase`-ის **პირველი production გამოყენება** (აქამდე მხოლოდ Stage 14-ის embedding consumer-ები იყენებდნენ; ესეც იმავე pattern-ს იმეორებს). `GET /api/notifications`, `PATCH /api/notifications/{id}/read` — ნებისმიერი authenticated user (Person-იც, Company-იც).
+
+**ახალი entity:** `Notification` (Task 3-ს არ ჰქონდა, Task 18-ის საჭიროებით დაემატა) — `RecipientUserId` პირდაპირ `User`-ზეა მიბმული (არა PersonProfile ან Company ცალკე), რადგან ერთი notification-ის მექანიზმი ორივე მიმღებ ტიპს ემსახურება: `ApplicationSubmitted` → კომპანიას (job-ის მფლობელს), `ApplicationStatusChanged` → კანდიდატს.
+
+**რეალურად შემოწმდა სრული ჯაჭვი:** Nino-მ განაცხადი გაგზავნა → NotificationService-ის consumer-მა რეალურად მიიღო event RabbitMQ-დან (log-ში ჩანს SQL INSERT) → Bank of Georgia-მ `GET /api/notifications`-ით რეალურად ნახა "Nino Giorgiashvili-მა გამოგიგზავნათ განაცხადი..."; status შეიცვალა `Interview`-ზე → Nino-მ მიიღო "თქვენი განაცხადის სტატუსი... შეიცვალა: მოწვეულია გასაუბრებაზე"; mark-as-read იმუშავა (`isRead: true`); სხვა user-ის notification-ის მონიშვნაზე — 403; token-ის გარეშე — 401.
+
+შემდეგი: **ეტაპი 19 — AI RAG Chat** (Gemini, pgvector-ით რელევანტური ვაკანსიების ძიება).
