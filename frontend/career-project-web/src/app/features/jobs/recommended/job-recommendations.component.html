@@ -10,71 +10,133 @@
   <main class="content">
     <h1 class="page-title">რეკომენდირებული ვაკანსიები</h1>
 
-    <div class="filters-row">
-      <select class="filter-select" [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)">
-        <option value="">ყველა ლოკაცია</option>
-        @for (loc of locations(); track loc) {
-          <option [value]="loc">{{ loc }}</option>
-        }
-      </select>
-
-      <select
-        class="filter-select"
-        [ngModel]="employmentTypeFilter()"
-        (ngModelChange)="employmentTypeFilter.set($event)"
-      >
-        <option value="">ყველა დასაქმების ტიპი</option>
-        @for (type of employmentTypes; track type.value) {
-          <option [value]="type.value">{{ type.label }}</option>
-        }
-      </select>
-
-      <button type="button" class="sort-btn" (click)="toggleSortOrder()">
-        შესაბამისობით {{ sortOrder() === 'desc' ? '↓' : '↑' }}
-      </button>
-    </div>
-
-    @if (isLoading()) {
-      <p class="status-text">იტვირთება...</p>
-    } @else if (errorMessage()) {
-      <p class="status-text error">{{ errorMessage() }}</p>
-    } @else if (filteredJobs().length === 0) {
-      <p class="status-text">ვაკანსიები ვერ მოიძებნა.</p>
-    } @else {
-      <div class="job-list">
-        @for (job of filteredJobs(); track job.jobId) {
-          <article class="job-card">
-            <div class="job-card-header">
-              <div>
-                <h2 class="job-title">{{ job.title }}</h2>
-                <div class="job-company">{{ job.companyName }}</div>
-              </div>
-              <span class="match-badge">{{ matchPercent(job) }}% შესაბამისობა</span>
-            </div>
-
-            <div class="job-meta">
-              <span class="meta-item">📍 {{ job.location }}</span>
-              <span class="meta-item">🗂 {{ employmentTypeLabel(job.employmentType) }}</span>
-              @if (job.workFormat) {
-                <span class="meta-item">🏠 {{ workFormatLabel(job.workFormat) }}</span>
-              }
-              @if (job.salaryMin || job.salaryMax) {
-                <span class="meta-item">
-                  💰 {{ job.salaryMin }}–{{ job.salaryMax }} {{ job.salaryCurrency }}
-                </span>
-              }
-            </div>
-
-            @if (job.requiredSkills.length > 0) {
-              <div class="skill-chips">
-                @for (skill of job.requiredSkills; track skill.skillId) {
-                  <span class="skill-chip">{{ skill.skillName }}</span>
-                }
-              </div>
+    <div class="recommendations-grid">
+      <section class="jobs-column">
+        <div class="filters-row">
+          <select class="filter-select" [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)">
+            <option value="">ყველა ლოკაცია</option>
+            @for (loc of locations(); track loc) {
+              <option [value]="loc">{{ loc }}</option>
             }
-          </article>
+          </select>
+
+          <select
+            class="filter-select"
+            [ngModel]="employmentTypeFilter()"
+            (ngModelChange)="employmentTypeFilter.set($event)"
+          >
+            <option value="">ყველა დასაქმების ტიპი</option>
+            @for (type of employmentTypes; track type.value) {
+              <option [value]="type.value">{{ type.label }}</option>
+            }
+          </select>
+
+          <button type="button" class="sort-btn" (click)="toggleSortOrder()">
+            შესაბამისობით {{ sortOrder() === 'desc' ? '↓' : '↑' }}
+          </button>
+        </div>
+
+        @if (isLoading()) {
+          <p class="status-text">იტვირთება...</p>
+        } @else if (errorMessage()) {
+          <p class="status-text error">{{ errorMessage() }}</p>
+        } @else if (filteredJobs().length === 0) {
+          <p class="status-text">ვაკანსიები ვერ მოიძებნა.</p>
+        } @else {
+          <div class="job-list">
+            @for (job of filteredJobs(); track job.jobId) {
+              <article
+                class="job-card"
+                [id]="'job-' + job.jobId"
+                [class.highlighted]="highlightedJobId() === job.jobId"
+              >
+                <div class="job-card-header">
+                  <div>
+                    <h2 class="job-title">{{ job.title }}</h2>
+                    <div class="job-company">{{ job.companyName }}</div>
+                  </div>
+                  <span class="match-badge">{{ matchPercent(job) }}% შესაბამისობა</span>
+                </div>
+
+                <div class="job-meta">
+                  <span class="meta-item">📍 {{ job.location }}</span>
+                  <span class="meta-item">🗂 {{ employmentTypeLabel(job.employmentType) }}</span>
+                  @if (job.workFormat) {
+                    <span class="meta-item">🏠 {{ workFormatLabel(job.workFormat) }}</span>
+                  }
+                  @if (job.salaryMin || job.salaryMax) {
+                    <span class="meta-item">
+                      💰 {{ job.salaryMin }}–{{ job.salaryMax }} {{ job.salaryCurrency }}
+                    </span>
+                  }
+                </div>
+
+                @if (job.requiredSkills.length > 0) {
+                  <div class="skill-chips">
+                    @for (skill of job.requiredSkills; track skill.skillId) {
+                      <span class="skill-chip">{{ skill.skillName }}</span>
+                    }
+                  </div>
+                }
+              </article>
+            }
+          </div>
         }
-      </div>
-    }
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <span class="chat-icon">🤖</span>
+          <div>
+            <div class="chat-title">AI Job Assistant</div>
+            <div class="chat-subtitle">დამისვით შეკითხვა ვაკანსიების შესახებ</div>
+          </div>
+        </div>
+
+        <div class="chat-history">
+          @if (chatMessages().length === 0) {
+            <p class="chat-empty">მაგ: „მინდა junior backend პოზიცია დისტანციურად"</p>
+          }
+          @for (msg of chatMessages(); track $index) {
+            <div class="chat-bubble" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+              <p class="bubble-text">{{ msg.content }}</p>
+              @if (msg.referencedJobs && msg.referencedJobs.length > 0) {
+                <div class="bubble-jobs">
+                  @for (job of msg.referencedJobs; track job.jobId) {
+                    <button type="button" class="job-chip-btn" (click)="focusJob(job.jobId)">
+                      {{ job.title }} · {{ job.companyName }}
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @if (chatLoading()) {
+            <div class="chat-bubble assistant loading">
+              <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+            </div>
+          }
+        </div>
+
+        @if (chatError()) {
+          <p class="chat-error">{{ chatError() }}</p>
+        }
+
+        <form class="chat-input-row" (ngSubmit)="sendChatMessage()">
+          <input
+            class="chat-input"
+            type="text"
+            name="chatInput"
+            placeholder="დაწერეთ შეტყობინება..."
+            [ngModel]="chatInput()"
+            (ngModelChange)="chatInput.set($event)"
+            [disabled]="chatLoading()"
+          />
+          <button type="submit" class="chat-send-btn" [disabled]="chatLoading() || !chatInput().trim()">
+            გაგზავნა
+          </button>
+        </form>
+      </aside>
+    </div>
   </main>
 </div>
