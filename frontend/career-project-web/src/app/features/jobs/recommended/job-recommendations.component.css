@@ -13,6 +13,10 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .content {
@@ -356,4 +360,34 @@
 .chat-send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 16px;
+  }
+
+  .job-card {
+    padding: 16px;
+  }
+
+  .filters-row {
+    gap: 8px;
+  }
+
+  .filter-select,
+  .sort-btn {
+    flex: 1 1 auto;
+  }
+
+  /* Sticky only makes sense beside the job list on desktop - stacked below it on
+     mobile, a sticky chat panel would awkwardly pin itself mid-scroll. */
+  .chat-panel {
+    position: static;
+    max-height: none;
+  }
+
+  .chat-history {
+    max-height: 320px;
+  }
 }

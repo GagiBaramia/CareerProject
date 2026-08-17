@@ -64,3 +64,24 @@
 .status-text.error {
   color: var(--color-danger);
 }
+
+@media (max-width: 768px) {
+  /* Clears the fixed mobile topbar (see sidebar-nav.component.css) instead of
+     sitting underneath it. */
+  .shell-content {
+    padding: 20px 16px;
+    padding-top: calc(56px + 20px);
+  }
+
+  .shell-header {
+    margin-bottom: 20px;
+  }
+
+  .shell-title {
+    font-size: 20px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+}

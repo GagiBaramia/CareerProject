@@ -1,40 +1,54 @@
-<aside class="sidebar">
-  <a [routerLink]="auth.dashboardRouteForCurrentRole()" class="sidebar-brand">
+<header class="mobile-topbar">
+  <button type="button" class="hamburger-btn" (click)="toggle()" aria-label="მენიუ">
+    <span></span><span></span><span></span>
+  </button>
+  <a [routerLink]="auth.dashboardRouteForCurrentRole()" class="mobile-brand">
+    <span class="brand-icon">💼</span>
+    <span class="brand-name">კარიერა</span>
+  </a>
+</header>
+
+@if (isOpen()) {
+  <div class="sidebar-backdrop" (click)="close()"></div>
+}
+
+<aside class="sidebar" [class.open]="isOpen()">
+  <a [routerLink]="auth.dashboardRouteForCurrentRole()" class="sidebar-brand" (click)="close()">
     <span class="brand-icon">💼</span>
     <span class="brand-name">კარიერა</span>
   </a>
 
   <nav class="sidebar-nav">
     @if (!isCompany()) {
-      <a routerLink="/dashboard/person" routerLinkActive="active" class="nav-link">
+      <a routerLink="/dashboard/person" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">🏠</span> მთავარი
       </a>
-      <a routerLink="/jobs/recommended" routerLinkActive="active" class="nav-link">
+      <a routerLink="/jobs/recommended" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">💼</span> ვაკანსიები
       </a>
-      <a routerLink="/applications" routerLinkActive="active" class="nav-link">
+      <a routerLink="/applications" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">📄</span> ჩემი განაცხადები
       </a>
-      <a routerLink="/messages" routerLinkActive="active" class="nav-link">
+      <a routerLink="/messages" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">💬</span> შეტყობინებები
       </a>
-      <a routerLink="/profile/edit" routerLinkActive="active" class="nav-link">
+      <a routerLink="/profile/edit" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">👤</span> პროფილი
       </a>
     } @else {
-      <a routerLink="/dashboard/company" routerLinkActive="active" class="nav-link">
+      <a routerLink="/dashboard/company" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">🏠</span> მთავარი
       </a>
-      <a routerLink="/jobs/new" routerLinkActive="active" class="nav-link">
+      <a routerLink="/jobs/new" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">➕</span> ახალი ვაკანსია
       </a>
-      <a routerLink="/company/applicants" routerLinkActive="active" class="nav-link">
+      <a routerLink="/company/applicants" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">👥</span> კანდიდატები
       </a>
-      <a routerLink="/messages" routerLinkActive="active" class="nav-link">
+      <a routerLink="/messages" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">💬</span> შეტყობინებები
       </a>
-      <a routerLink="/company/profile" routerLinkActive="active" class="nav-link">
+      <a routerLink="/company/profile" routerLinkActive="active" class="nav-link" (click)="close()">
         <span class="nav-icon">🏢</span> კომპანიის პროფილი
       </a>
     }

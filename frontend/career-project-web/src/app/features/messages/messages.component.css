@@ -189,3 +189,74 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.back-to-list-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  /* Keep the 100vh/flex:1/min-height:0 chain from the base rules intact (that's what
+     makes .chat-messages scroll internally instead of the whole page) - only the
+     padding needs to shrink and clear the fixed mobile topbar. */
+  .messages-content {
+    padding: calc(56px + 12px) 12px 12px !important;
+  }
+
+  .messages-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Only one pane is visible at a time - list by default, chat once a conversation
+     is selected (see [class.mobile-show-chat] on .messages-layout). */
+  .conversation-list-pane,
+  .chat-pane {
+    display: none;
+  }
+
+  .messages-layout:not(.mobile-show-chat) .conversation-list-pane {
+    display: flex;
+  }
+
+  .messages-layout.mobile-show-chat .chat-pane {
+    display: flex;
+  }
+
+  .back-to-list-btn {
+    display: flex;
+  }
+
+  /* Text inputs have a browser-default intrinsic min-width that ignores flex:1 and
+     pushes the send button past the viewport edge - min-width:0 lets it actually shrink. */
+  .chat-input {
+    min-width: 0;
+  }
+
+  .chat-input-row {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .chat-send-btn {
+    padding: 11px 16px;
+    flex-shrink: 0;
+  }
+
+  .chat-header {
+    padding: 12px 16px;
+  }
+
+  .chat-messages {
+    padding: 16px;
+  }
+}

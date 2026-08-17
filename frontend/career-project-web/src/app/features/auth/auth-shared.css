@@ -166,3 +166,22 @@
   font-size: 14px;
   color: var(--color-text-muted);
 }
+
+@media (max-width: 480px) {
+  .brand-header {
+    padding: 14px 16px;
+  }
+
+  .auth-content {
+    padding: 24px 16px;
+    align-items: flex-start;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+  }
+
+  .auth-title {
+    font-size: 21px;
+  }
+}

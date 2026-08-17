@@ -109,3 +109,33 @@
   font-size: 11px;
   color: var(--color-text-muted);
 }
+
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 16px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .candidates-card {
+    padding: 16px;
+    position: static;
+  }
+
+  .candidates-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .salary-row {
+    flex-wrap: wrap;
+  }
+
+  .salary-currency {
+    flex: 1 1 100%;
+  }
+}

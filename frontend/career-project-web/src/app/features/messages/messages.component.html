@@ -6,7 +6,7 @@
       <h1 class="shell-title">შეტყობინებები</h1>
     </header>
 
-    <div class="messages-layout">
+    <div class="messages-layout" [class.mobile-show-chat]="!!selectedConversationId()">
       <aside class="conversation-list-pane">
         @if (isLoadingConversations()) {
           <p class="status-text">იტვირთება...</p>
@@ -41,6 +41,9 @@
           <app-empty-state icon="💬" message="აირჩიეთ საუბარი, რომ ნახოთ შეტყობინებები." />
         } @else {
           <header class="chat-header">
+            <button type="button" class="back-to-list-btn" (click)="deselectConversation()" aria-label="სიაში დაბრუნება">
+              ←
+            </button>
             <app-avatar
               [imageUrl]="selectedConversation()!.otherPartyImageUrl"
               [name]="selectedConversation()!.otherPartyName"

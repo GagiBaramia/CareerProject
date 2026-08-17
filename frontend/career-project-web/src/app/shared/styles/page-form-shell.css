@@ -157,3 +157,32 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .brand-header {
+    padding: 14px 16px;
+  }
+
+  .brand-name {
+    font-size: 17px;
+  }
+
+  .page-title {
+    font-size: 21px;
+    margin-bottom: 20px;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .form-actions .btn-primary,
+  .form-actions .btn-outline {
+    width: 100%;
+  }
+}

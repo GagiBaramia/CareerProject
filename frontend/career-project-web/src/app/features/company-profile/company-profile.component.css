@@ -44,3 +44,9 @@
   color: #059669;
   font-size: 13px;
 }
+
+@media (max-width: 480px) {
+  .logo-section {
+    flex-wrap: wrap;
+  }
+}

@@ -83,10 +83,16 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.isLoadingConversations.set(false);
 
         const requestedId = this.route.snapshot.queryParamMap.get('conversationId');
+        // On mobile, list and chat are separate panes (see .mobile-show-chat) - auto-opening
+        // the first conversation would land the user straight in a chat with the list hidden.
+        // Desktop shows both panes at once, so auto-selecting there is still helpful.
+        const isMobileViewport = window.innerWidth <= 768;
         const initialId =
           requestedId && conversations.some((c) => c.id === requestedId)
             ? requestedId
-            : (conversations[0]?.id ?? null);
+            : isMobileViewport
+              ? null
+              : (conversations[0]?.id ?? null);
 
         if (initialId) {
           this.selectConversation(initialId);
@@ -124,6 +130,12 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.isLoadingMessages.set(false);
       }
     });
+  }
+
+  // Mobile-only "← back" button in the chat header - on desktop both panes are always
+  // visible side by side, so this is unreachable there (see .back-to-list-btn CSS).
+  deselectConversation(): void {
+    this.selectedConversationId.set(null);
   }
 
   sendMessage(): void {

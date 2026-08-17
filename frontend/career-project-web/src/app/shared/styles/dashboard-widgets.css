@@ -203,3 +203,21 @@
   background: var(--color-bg);
   text-decoration: none;
 }
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .greeting-row {
+    gap: 12px;
+  }
+
+  .mini-job-card,
+  .mini-application-row,
+  .mini-conversation-row,
+  .mini-applicant-row {
+    flex-wrap: wrap;
+  }
+}

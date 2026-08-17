@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { SessionService } from '../../../core/services/session.service';
@@ -16,7 +16,20 @@ export class SidebarNavComponent {
 
   readonly isCompany = computed(() => this.auth.role() === 'Company');
 
+  // Only meaningful on mobile (CSS keeps the sidebar always visible above the
+  // breakpoint) - a hamburger button toggles this, nav links/backdrop close it.
+  readonly isOpen = signal(false);
+
+  toggle(): void {
+    this.isOpen.update((open) => !open);
+  }
+
+  close(): void {
+    this.isOpen.set(false);
+  }
+
   logout(): void {
+    this.close();
     void this.session.logout();
   }
 }
