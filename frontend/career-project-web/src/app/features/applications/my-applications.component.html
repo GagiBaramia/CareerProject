@@ -22,7 +22,9 @@
         @for (app of applications(); track app.id) {
           <article class="application-card">
             <div class="application-main">
-              <h2 class="application-title">{{ app.jobTitle }}</h2>
+              <h2 class="application-title">
+                <a [routerLink]="['/jobs', app.jobId]" class="application-title-link">{{ app.jobTitle }}</a>
+              </h2>
               <div class="application-company">{{ app.companyName }}</div>
               <div class="application-date">გაგზავნილია: {{ app.appliedAt | date: 'dd/MM/yyyy' }}</div>
             </div>

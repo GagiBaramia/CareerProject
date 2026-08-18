@@ -110,13 +110,27 @@
   margin: 0;
   font-size: 17px;
   font-weight: 700;
+}
+
+.job-title-link {
   color: var(--color-primary);
+  text-decoration: none;
+}
+
+.job-title-link:hover {
+  text-decoration: underline;
 }
 
 .job-company {
+  display: inline-block;
   margin-top: 2px;
   font-size: 13px;
   color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.job-company:hover {
+  text-decoration: underline;
 }
 
 .match-badge {

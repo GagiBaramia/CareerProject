@@ -1,0 +1,71 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    @if (isLoading()) {
+      <p class="status-text">იტვირთება...</p>
+    } @else if (errorMessage()) {
+      <p class="status-text error">{{ errorMessage() }}</p>
+    } @else {
+      @if (job(); as job) {
+        <header class="shell-header">
+          <div>
+            <h1 class="shell-title">{{ job.title }}</h1>
+            <p class="shell-subtitle">
+              <a [routerLink]="['/companies', job.companyId]" class="company-link">{{ job.companyName }}</a>
+            </p>
+          </div>
+
+          @if (auth.role() === 'Person') {
+            <button
+              type="button"
+              class="apply-btn"
+              [class.applied]="hasApplied()"
+              [disabled]="hasApplied() || isApplying()"
+              (click)="apply()"
+            >
+              @if (hasApplied()) {
+                განაცხადი გაგზავნილია ✓
+              } @else if (isApplying()) {
+                იგზავნება...
+              } @else {
+                განაცხადის გაგზავნა
+              }
+            </button>
+          }
+        </header>
+
+        @if (applyError()) {
+          <p class="status-text error">{{ applyError() }}</p>
+        }
+
+        <section class="section">
+          <div class="job-meta">
+            <span class="meta-item">📍 {{ job.location }}</span>
+            <span class="meta-item">🗂 {{ employmentTypeLabel(job.employmentType) }}</span>
+            @if (job.workFormat) {
+              <span class="meta-item">🏠 {{ workFormatLabel(job.workFormat) }}</span>
+            }
+            @if (job.salaryMin || job.salaryMax) {
+              <span class="meta-item">💰 {{ job.salaryMin }}–{{ job.salaryMax }} {{ job.salaryCurrency }}</span>
+            }
+            <span class="meta-item">🗓 გამოქვეყნდა: {{ job.createdAt | date: 'dd/MM/yyyy' }}</span>
+          </div>
+
+          @if (job.requiredSkills.length > 0) {
+            <div class="skill-chips">
+              @for (skill of job.requiredSkills; track skill.skillId) {
+                <span class="skill-chip">{{ skill.skillName }} · {{ proficiencyLabel(skill.requiredLevel) }}</span>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">ვაკანსიის აღწერა</h2>
+          <p class="job-description">{{ job.description }}</p>
+        </section>
+      }
+    }
+  </main>
+</div>

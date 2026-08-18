@@ -31,7 +31,8 @@
                 <div class="applicant-headline">{{ app.personHeadline }}</div>
               }
               <div class="applicant-meta">
-                {{ app.jobTitle }} · გაგზავნილია: {{ app.appliedAt | date: 'dd/MM/yyyy' }}
+                <a [routerLink]="['/jobs', app.jobId]" class="applicant-job-link">{{ app.jobTitle }}</a>
+                · გაგზავნილია: {{ app.appliedAt | date: 'dd/MM/yyyy' }}
               </div>
               @if (app.personSkills.length > 0) {
                 <div class="applicant-skills">

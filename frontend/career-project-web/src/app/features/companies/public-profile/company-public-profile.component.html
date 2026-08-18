@@ -1,0 +1,59 @@
+<div class="shell">
+  <app-sidebar-nav />
+
+  <main class="shell-content">
+    @if (isLoading()) {
+      <p class="status-text">იტვირთება...</p>
+    } @else if (errorMessage()) {
+      <p class="status-text error">{{ errorMessage() }}</p>
+    } @else {
+      @if (company(); as company) {
+        <header class="shell-header">
+          <div class="company-header-main">
+            <app-avatar [imageUrl]="company.logoUrl" [name]="company.name" [size]="64" />
+            <div>
+              <h1 class="shell-title">{{ company.name }}</h1>
+              @if (company.industry) {
+                <p class="shell-subtitle">{{ company.industry }}</p>
+              }
+            </div>
+          </div>
+        </header>
+
+        @if (company.description) {
+          <section class="section">
+            <h2 class="section-title">კომპანიის შესახებ</h2>
+            <p class="company-description">{{ company.description }}</p>
+          </section>
+        }
+
+        <section class="section">
+          <h2 class="section-title">გამოქვეყნებული ვაკანსიები</h2>
+
+          @if (isLoadingJobs()) {
+            <p class="status-text">იტვირთება...</p>
+          } @else if (jobs().length === 0) {
+            <app-empty-state icon="💼" message="ამ კომპანიას ჯერ არცერთი ვაკანსია არ გამოუქვეყნებია." />
+          } @else {
+            <div class="job-list">
+              @for (job of jobs(); track job.id) {
+                <a [routerLink]="['/jobs', job.id]" class="job-row">
+                  <div class="job-row-main">
+                    <h3 class="job-row-title">{{ job.title }}</h3>
+                    <div class="job-row-meta">
+                      📍 {{ job.location }} · {{ employmentTypeLabel(job.employmentType) }}
+                      @if (job.workFormat) {
+                        · {{ workFormatLabel(job.workFormat) }}
+                      }
+                    </div>
+                  </div>
+                  <span class="job-row-arrow">→</span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+      }
+    }
+  </main>
+</div>

@@ -15,4 +15,8 @@ export class CompanyService {
   updateMyCompany(request: UpdateCompanyProfileRequest): Observable<CompanyProfile> {
     return this.http.put<CompanyProfile>(`${API_BASE_URL}/api/company/me`, request);
   }
+
+  getCompany(id: string): Observable<CompanyProfile> {
+    return this.http.get<CompanyProfile>(`${API_BASE_URL}/api/company/${id}`);
+  }
 }

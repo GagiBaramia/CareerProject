@@ -6,6 +6,7 @@ using CareerProject.Shared.Data;
 using CareerProject.Shared.Entities;
 using CareerProject.Shared.Storage;
 using CareerProject.Shared.Validation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace CareerProject.JobService.Endpoints;
@@ -21,6 +22,13 @@ public static class CompanyEndpoints
         group.MapGet("/me", GetMyCompany);
         group.MapPut("/me", UpdateMyCompany);
         group.MapPost("/me/logo", UploadLogo).DisableAntiforgery();
+
+        // Public read of any company's profile (e.g. a candidate viewing a job's employer) -
+        // separate group so it isn't gated behind the CompanyOnly policy above.
+        app.MapGroup("/api/company")
+            .WithTags("Company")
+            .RequireAuthorization()
+            .MapGet("/{id:guid}", GetCompanyById);
     }
 
     private static async Task<IResult> GetMyCompany(ClaimsPrincipal user, CareerProjectDbContext db)
@@ -50,6 +58,15 @@ public static class CompanyEndpoints
         company.LogoUrl = request.LogoUrl;
 
         await db.SaveChangesAsync();
+
+        return Results.Ok(ToResponse(company));
+    }
+
+    private static async Task<IResult> GetCompanyById(Guid id, CareerProjectDbContext db)
+    {
+        var company = await db.Companies.FirstOrDefaultAsync(c => c.Id == id);
+        if (company is null)
+            return Results.NotFound();
 
         return Results.Ok(ToResponse(company));
     }

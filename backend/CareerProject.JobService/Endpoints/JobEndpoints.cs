@@ -71,11 +71,17 @@ public static class JobEndpoints
         return Results.Created($"/api/jobs/{job.Id}", ToResponse(created!));
     }
 
-    private static async Task<IResult> ListJobs(CareerProjectDbContext db)
+    private static async Task<IResult> ListJobs(CareerProjectDbContext db, Guid? companyId)
     {
-        var jobs = await db.Jobs
+        var query = db.Jobs
             .Include(j => j.Company)
             .Include(j => j.JobSkills).ThenInclude(js => js.Skill)
+            .AsQueryable();
+
+        if (companyId.HasValue)
+            query = query.Where(j => j.CompanyId == companyId.Value);
+
+        var jobs = await query
             .OrderByDescending(j => j.CreatedAt)
             .ToListAsync();
 

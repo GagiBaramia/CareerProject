@@ -53,6 +53,20 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'jobs/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/jobs/detail/job-detail.component').then((m) => m.JobDetailComponent)
+  },
+  {
+    path: 'companies/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/companies/public-profile/company-public-profile.component').then(
+        (m) => m.CompanyPublicProfileComponent
+      )
+  },
+  {
     path: 'applications',
     canActivate: [personGuard],
     loadComponent: () =>

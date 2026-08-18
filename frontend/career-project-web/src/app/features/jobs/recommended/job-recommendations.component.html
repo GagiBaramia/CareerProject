@@ -52,8 +52,10 @@
               >
                 <div class="job-card-header">
                   <div>
-                    <h2 class="job-title">{{ job.title }}</h2>
-                    <div class="job-company">{{ job.companyName }}</div>
+                    <h2 class="job-title">
+                      <a [routerLink]="['/jobs', job.jobId]" class="job-title-link">{{ job.title }}</a>
+                    </h2>
+                    <a [routerLink]="['/companies', job.companyId]" class="job-company">{{ job.companyName }}</a>
                   </div>
                   <span class="match-badge">{{ matchPercent(job) }}% შესაბამისობა</span>
                 </div>
